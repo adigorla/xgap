@@ -1,0 +1,105 @@
+#!/usr/bin/python3
+
+"""Main executable for XGAP"""
+import sys
+import os
+import getpass as gp
+
+_XGAP_ROOT_DIR = "".join([os.path.dirname(os.path.realpath(__file__)), "/.."])
+sys.path.insert(1,_XGAP_ROOT_DIR)
+
+if len(sys.argv) != 4:
+    help_message()
+    sys.exit()
+sys.path.insert(2,sys.argv[3])
+
+import xgap
+
+def help_message():
+  """Print program info and usage"""
+  print("\nProgram: XGAP (eXtensible Genome Analysis Pipeline)")
+  print("Version: {}\n".format(xgap.__version__))
+  print("Usage:\txgap [run name] [input file] [config]\n")
+  print("run name:\tName of batch and/or single file run")
+  print("input file:\tPath to file with samples. Each line has")
+  print("           \tsample ID and sample path separated by space")
+  print("config:    \tConfiguration file for sample batch\n")
+
+def start_batch(batch_id, batch_path, config_path):
+  """Schedules analysis for given batch and configuration
+
+  Args:
+    batch_id: General identifer for samples to be analyzed
+    batch_path: Path to file listing samples to analyze
+    config_path: Path to config.yml
+  """
+  sys.path.insert(2,config_path)
+  config = xgap.workflow.setup_utils.read_simple_yaml(config_path)
+  samples = xgap.workflow.setup_utils.read_batch_file(batch_path)
+  n_regions = config['n-regions']
+  mail_set = config['mail-notify']
+
+  print("\nStarting batch: {}\n".format(batch_id))
+  print("Analyzing samples listed in: {}\n".format(batch_path))
+  print(f"\n\tThe merge_bams step is currentlly DECATIVATED! Go to the pipeline.py file to re-activate it.\n")
+  if input(":: List samples? [y/n] ") == 'y':
+    print()
+    for sample_id, bam_path in samples:
+      print(sample_id)
+    print()
+    if input(":: Continue? [y/n] ") != 'y':
+      print("\nExiting...")
+      return
+  print("\nINFO:")
+  print("\tOutput BAMs and VCFs will be written to:\n\t{}/\n".format(config['output-dir']))
+  print("\tLogs will be written to:\n\t{}/\n".format(config['log-dir']))
+  print("\tAnalysis for each sample will be split over {} regions".format(n_regions))
+  if len(mail_set) == 3 and mail_set[0] == 'y' and len(mail_set[1]) > 0 and len(mail_set[2]) > 0:
+    print("\n\tNOTE: Email notifications are turned ON")
+    print("\n\tNotifications will be sent to: {}".format(mail_set[2]))
+    print("\n\tPlease enter the password for: {}\n".format(mail_set[1]))
+    pwd = gp.getpass(prompt="Type your password and press enter: ")
+  else:
+    print("\n\tNOTE: Email notifications are turned OFF")
+    print("\n\tIf you want email notifications, exit and provide the 3 required args in the config file.")
+    pwd = None
+  mail_set.append(pwd)
+  if input("\n:: Begin analysis? [y/n] ") != 'y':
+    print("\nExiting...")
+    return
+  print()
+  #Generate required directories
+  xgap.workflow.setup_utils.setup_directories(config, samples,mail_set)
+  # Generate sequence intervals
+  ref_dict = config["ref-dict"]
+  interval_dir = "{}/xgap_intervals/{}/{}".format(config["working-dir"], config['ref-type'], n_regions)
+  if not os.path.isdir(interval_dir):
+    os.makedirs(interval_dir)
+  path, dirs, files = next(os.walk(interval_dir))
+  if len(files) != (int(n_regions)*4):
+    sys.stdout.write("Generating region intervals ... ")
+    sys.stdout.flush()
+    xgap.workflow.setup_utils.generate_intervals(ref_dict, interval_dir, n_regions)
+    print("Done\n")
+  for sample in samples:
+    start_sample(sample, config_path)
+  print("\nAnalysis scheduled. Exiting...")
+
+def start_sample(sample, config_path):
+  """Begins analysis of sample at sample_path"""
+  sample_id = sample[0]
+  sample_path = sample[1]
+  sys.stdout.write("\nStarting {} ...\n ".format(sample_id))
+  sys.stdout.flush()
+  xgap.pipeline.main(sample_id, sample_path, config_path)
+  print("Done")
+
+if __name__ == "__main__":
+  if len(sys.argv) != 4:
+    help_message()
+    sys.exit()
+  batch_id = sys.argv[1]
+  batch_file = sys.argv[2]
+  config_path = sys.argv[3]
+  sys.path.insert(2,config_path)
+  start_batch(batch_id, batch_file, config_path)
