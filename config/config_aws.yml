@@ -1,0 +1,106 @@
+---
+
+# This config file is specific to running the standard Winston pipeline on
+# a SGE managed cluster
+
+###########################
+## Output Specifications ##
+###########################
+
+# Directory to store all output files
+output-dir: "/data/"
+
+# Directory to store intermediate files
+working-dir: "/data/"
+
+# Directory to store logs
+log-dir: "/main-shared/"
+
+
+#############################
+## Resource Specifications ##
+#############################
+
+# Scheduler type: sge, slurm or aws_slurm [CASE SENSITIVE]
+scheduler: "aws_slurm"
+
+# Number of times a task can start before being aborted
+start-limit: "2"
+
+# Max number of failed jobs per pask that will be rerun; If more, analysis will be aborted
+rerun-limit: "500"
+
+# Number of regions to parallelize a sample
+n-regions: "192"
+
+# Max threads available for a task
+n-threads: "1"
+
+# Max memory available for each  task
+#Memeory allocation coresponds to the following tasks:
+#[fastq_prep, bwa, dedup_chri, dedup, base_recal, merge_recal, bqsr_hc_gvcf, merge_bams, check]
+avail-memory: ["1G", "7500M", "7500M", "7500M", "7500M", "8G", "7500M", "1G", "512M"]
+
+# Max time allotted for a task (default 12 hours)
+#Time allocation correspond to the following tasks:  
+#[fastq_prep, bwa, dedup_chri, dedup, base_recal, merge_recal, bqsr_hc_gvcf, merge_bams, check] 
+avail-time: ["18:00:00", "09:00:00", "06:00:00", "01:00:00", "00:45:00", "00:30:00", "12:00:00", "18:00:00", "00:30:00"]
+
+#Sequencing Platform
+seq-plat: "ILLUMINA" 
+
+# Unique identifier of output disk in output of "df" util, [NEED TO FIX THIS]
+output-disk-identifier: "devtmpfs"
+
+# Analysis will halt if disk usage greater than or equal to this value
+free-disk-threshold: "99"
+
+# Number of samples actively analyzed on shared queue
+shared-active-samples: "6"
+
+# Number of samples actively analyzed on highp queue
+highp-active-samples: "12"
+
+#Mail notify settings
+mail-notify: ["y", "adihoffman2@gmail.com", "aditya.gorla@yahoo.com"]
+
+##########################
+## Program Dependencies ##
+##########################
+
+# Path to java 1.8.X executable 
+java-dir: "/usr/bin/java8"
+
+# Path to BWA executable
+bin-bwa: "/main-shared/winston_depn/lib/bwa/bwa-0.7.10/bwa"
+
+# Path to GATK 3.7/3.8 jar
+gatk-jar: "/main-shared/winston_depn/lib/gatk/GenomeAnalysisTK-3.8-1-0/GenomeAnalysisTK.jar"
+
+# Path to sambamba execuatble
+# only use v0.6.6, new versions tend to unxexpectedly segfault on Xeon cores!
+bin-sambamba: "/main-shared/winston_depn/lib/sambamba/sambamba_v0.6.6"
+
+############################
+## Reference Dependencies ##
+############################
+
+# Reference type
+ref-type: "grch37"
+
+# Full path to reference fasta file
+ref-fasta: "/main-shared/winston_depn/ref_genome/grch37/human_g1k_v37.fasta"
+
+# Full path to reference dict file
+ref-dict: "/main-shared/winston_depn/ref_genome/grch37/human_g1k_v37.dict"
+
+# Full path to reference dbsnp vcf file
+dbsnp-vcf: "/main-shared/winston_depn/ref_genome/grch37/dbsnp_138.b37.vcf"
+
+# Full path to reference 1000g indels vcf file
+1000g-indel-vcf: "/main-shared/winston_depn/ref_genome/grch37/1000G_phase1.indels.b37.vcf"
+
+# Full path to reference Mills and Devine indel vcf file
+mills-devine-indel-vcf: "/main-shared/winston_depn/ref_genome/grch37/Mills_and_1000G_gold_standard.indels.b37.vcf"
+
+...
