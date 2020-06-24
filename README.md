@@ -7,7 +7,7 @@
 
 _**Documenation development in-progress**_
 
-xGAP (e**x**tensible **G**enome **A**nalysis **P**ipeline) is an efficient, extensible, modular, open-source, fault-tolerant next generation sequencing(NGS) genome analysis pipeline framework. It implements massive parallelization of the GATK best practices pipeline  by splitting a genome into many smaller regions with efficient load-balancing to achieve high scalability. It is compatible for use on on-premises (SGE & SLURM) high performance clusters and AWS EC2 cloud servers (using [ParallelCluster](https://github.com/aws/aws-parallelcluster)). It is currently developed to efficiently perform germline small variants discovery accordance in with the [GATK best practices guidlines](https://gatk.broadinstitute.org/hc/en-us/articles/360035535932-Germline-short-variant-discovery-SNPs-Indels-). xGAP fully automates each of processing steps in data analysis, from converting raw sequencing reads(FASTQs or BAMs) into variant call format (VCFs), allow researchers with limited computational backgrounds to take advantage of our pipeline. This pipeline allows rapidly generate germline small variant VCFs with minimal user intervantion and runtime. The end-to-end analysis runtime scales down as the number of core available (and number regions you can parallely process) increases. It is currently benchmarked to process 30x coverage whole-genome sequencing (WGS) data in approximately 90 minutes, with 256 cores. xGAP achieves average F1 scores of 99.37% for SNVs and 99.20% for indels across seven benchmark WGS datasets. The pipeline is easy-to-use and fault-tolerant because it can automatically re-initiate failed processes to minimize required user intervention without halting analyis. To use xGAP, one simply needs to update a runtime resource configuration file, provide paths to input files and execute xGAP using a simple command, after which the pipeline will fault-tolerantly progress without any further user intervention, sending a notification email after completion. The pipeline allows batch processing aswll. This allows you submit multiple WGS for analysis at the sametime. The full software and source code will be open-source ensure anyone can use and modify the program freely to suit their research needs. 
+xGAP (e**x**tensible **G**enome **A**nalysis **P**ipeline) is an efficient, extensible, modular, open-source, fault-tolerant next generation sequencing(NGS) genome analysis pipeline framework. It implements massive parallelization of the GATK best practices pipeline  by splitting a genome into many smaller regions with efficient load-balancing to achieve high scalability. It is compatible for use on on-premises (SGE & SLURM) high performance clusters and AWS EC2 cloud servers (using [ParallelCluster](https://github.com/aws/aws-parallelcluster)). It is currently developed to efficiently perform germline small variants discovery accordance in with the [GATK best practices guidlines](https://gatk.broadinstitute.org/hc/en-us/articles/360035535932-Germline-short-variant-discovery-SNPs-Indels-). xGAP fully automates each of processing steps in data analysis, from converting raw sequencing reads(FASTQs or BAMs) into variant call format (VCFs), allow researchers with limited computational backgrounds to take advantage of our pipeline. This pipeline allows rapidly generate germline small variant VCFs with minimal user intervantion and runtime. The end-to-end analysis runtime scales down as the number of core available (and number regions you can parallely process) increases. It is currently benchmarked to process 30x coverage whole-genome sequencing (WGS) data in approximately 90 minutes, with 256 cores. xGAP achieves average F1 scores of 99.37% for SNVs and 99.20% for indels across seven benchmark WGS datasets. The pipeline is easy-to-use and fault-tolerant because it can automatically re-initiate failed processes to minimize required user intervention without halting analyis. To use xGAP, one simply needs to update a runtime resource configuration file, provide paths to input files and execute xGAP using a simple command, after which the pipeline will fault-tolerantly progress without any further user intervention, sending a notification email after completion. The pipeline allows batch processing aswell. This allows you submit multiple WGS for analysis at the same time. The full software and source code is available to ensure anyone can use and modify the program freely to suit their research needs. 
 
 
 ## Installation
@@ -34,7 +34,7 @@ git clone --single-branch --branch master git@github.com:Adigorla/xgap.git
 ~/xgap/interpAssign.sh </path/to/xgap/root/dir> </path/to/python3.X/interpreter>
 ```
 
-NOTE: You only need to do this once after dowload to make sure xGAP knows where to look to run the python code. 
+**NOTE**: You only need to do this once after dowload to make sure xGAP knows where to look to run the python code. 
 
 
 ## Usage
@@ -48,20 +48,26 @@ This is the text file where you set the paths to input files (FASTQs or BAMs) fo
 
 ```
 ### for input pair-end FASTQ files
+
 <Perfered Name for WGS dataset> </path/to/R1/fastq>,</path/to/R2/fastq>
 
+
 ### for input BAM/CRAM file
+
 <Perfered Name for WGS dataset> </path/to/BAM> 
 
-### Note that xGAP supports glob patterns for many files, as follows
+
+### Note that xGAP supports glob patterns for many files, as follows:
+
 NA12878 /path/to/NA12878-illumina/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R1_001.fastq,/path/to/NA12878-illumina/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R2_001.fastq
+
 ```
 Note: xGAP can, for now, only accept uncompressed FASTQ files with file extension format as `.fastq`.
 
 
 **3. Run**
 
-Executing xGAP is simple. 
+Executing xGAP is simple... 
 
 ```bash
 ~/xgap/bin/xgap <run_name> </path/to/input/file> </path/to/config/file>
@@ -71,7 +77,7 @@ Executing xGAP is simple.
 
 ## License and Disclaimer
 
-xGAP is publicly released under the AGPL-3.0 license (full license text found [here](https://github.com/Adigorla/xgap/blob/master/LICENSE). Note however that the programs it calls may be subject to different licenses. Users are responsible for checking that they are authorized to run all programs before running this script.
+xGAP is publicly released under the AGPL-3.0 license (full license text found [here](https://github.com/Adigorla/xgap/blob/master/LICENSE)). Note however that the programs it calls may be subject to different licenses. Users are responsible for checking that they are authorized to run all programs before running this script.
 * [GATK](https://github.com/broadinstitute/gatk/blob/master/LICENSE.TXT)
 * [BWA](http://bio-bwa.sourceforge.net/bwa.shtml#13)
 * [sambamba](https://github.com/biod/sambamba/blob/master/LICENSE)
