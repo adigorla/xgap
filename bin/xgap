@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
 
 """Main executable for XGAP"""
 import sys
@@ -7,11 +7,6 @@ import getpass as gp
 
 _XGAP_ROOT_DIR = "".join([os.path.dirname(os.path.realpath(__file__)), "/.."])
 sys.path.insert(1,_XGAP_ROOT_DIR)
-
-if len(sys.argv) != 4:
-    help_message()
-    sys.exit()
-sys.path.insert(2,sys.argv[3])
 
 import xgap
 

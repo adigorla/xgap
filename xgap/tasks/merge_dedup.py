@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
 
 """Methods for merging sorted BAM files and dedupping"""
 
@@ -128,6 +128,7 @@ def main(picard_jar, sample_id, n_regions, out_dir, interval_dir, log_prefix):
   complete_start = time()
   input_bam = "{}/Dedup/{}_{}.bam".format(out_dir, sample_id, region_name)
   input_bams = glob("{}/Bwa/{}/*.bam".format(out_dir,region_name))
+  """
   start = time()
   cmd = [sambamba,"merge",
          "--nthreads=1",
@@ -136,7 +137,8 @@ def main(picard_jar, sample_id, n_regions, out_dir, interval_dir, log_prefix):
   end = time()
   log_output.write("Finished merging in {} seconds\n".format(end-start))
   log_output.flush()
-  fsync(log_output.fileno())  
+  fsync(log_output.fileno())
+  """
   # trying to merge more than 300 file per process could trigger a Too Many Files ERROR in most systems!
   # if your system has a soft file discriptor limit >> 1024, merge all bams in one step for faster performance
   input_bams = [input_bams[x:x+300] for x in range(0, len(input_bams), 300)]
@@ -199,7 +201,7 @@ def main(picard_jar, sample_id, n_regions, out_dir, interval_dir, log_prefix):
     split_bam(sambamba, output_bam, out_prefix, interval_dir, log_output)
   complete_end = time()
   log_output.write("Merge and dedup completed in "
-                   "{} seconds\n".format(complete_end - complete_start))
+                   "{} seconds\n".format(round(complete_end - complete_start)))
   log_output.flush()
   fsync(log_output.fileno())
   log_output.close()

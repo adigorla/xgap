@@ -1,4 +1,4 @@
-#!/nafs/apps/anaconda/3.6/bin/python
+#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
 
 """XGAP pipeline"""
 
@@ -15,9 +15,12 @@ from sys import exit as sysexit
 
 try:
     from xgap import scheduler
-    from xgap import workflow 
-    config = workflow.setup_utils.read_simple_yaml(sys.path[2])
-    task_scheduler = getattr(scheduler, config["scheduler"])
+    from xgap import workflow
+    try:
+        config = workflow.setup_utils.read_simple_yaml(sys.path[2])
+        task_scheduler = getattr(scheduler, config["scheduler"])
+    except Exception:
+        task_scheduler = scheduler.slurm
 except ModuleNotFoundError:
     XGAP_DIR = argv[4]
     sys.path.insert(1,XGAP_DIR)
@@ -535,7 +538,7 @@ class TaskBqsrHc(Task):
     dbsnp_path = self.config["dbsnp-vcf"]
     mem = self.config["avail-memory"][6]
     runtime = self.config["avail-time"][6]
-    log_output = "/main-shared/log/" #"/dev/null"
+    log_output = "/dev/null"
     job_ids = []
     if rerun_indices:
       for index in rerun_indices:
@@ -554,7 +557,7 @@ class TaskBqsrHc(Task):
         job_ids.append(task_scheduler.submit_job(job_name, cmd, mem, runtime,
                                                  log_output))
     else:
-      cmd = "{}/bqsr_hc.py {} {} {} {} {} {} {} {} {} {}".format(task_dir,
+      cmd = "{}/bqsr_hc_vcf.py {} {} {} {} {} {} {} {} {} {}".format(task_dir,
                                                               gatk_jar,
                                                               self.sample_id,
                                                               ref_fa,
@@ -739,12 +742,10 @@ def main(sampleid, samplepath,configpath):
     sample_id = sampleid
     sample_path = samplepath
     config_path = sys.path[2]
-    #config = workflow.setup_utils.read_simple_yaml(config_path)
-#    print("\n this is the path:{} \n".format(sys.path[1]))
-#    if input("Continue? [y/n] ") != 'y':
-#      print("\nExiting...")
-#      return
+    config = workflow.setup_utils.read_simple_yaml(config_path)
     config["xgap_path"] = sys.path[1]
+    global task_scheduler 
+    task_scheduler = getattr(scheduler, config["scheduler"])
     workflow.checkpoint.main(sample_id, sample_path, config, config_path, pipeline)
 
 if __name__ == "__main__":

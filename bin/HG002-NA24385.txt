@@ -1,1 +1,0 @@
-HG002-NA24385 /nafs/jsul/aditya/original_datasets/HG002/HG002-NA24385-50x_1.fastq,/nafs/jsul/aditya/original_datasets/HG002/HG002-NA24385-50x_2.fastq

@@ -1,7 +1,6 @@
 ---
 
-# This config file is specific to running the standard Winston pipeline on
-# a SGE managed cluster
+# This config file is specific to run the standard xGAP pipeline
 
 ###########################
 ## Output Specifications ##

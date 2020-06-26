@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
 
 """Apply BQSR, call variants with HaplotypeCaller and generate vcf files using GenotypeGVCF"""
 
@@ -37,7 +37,7 @@ def print_reads(gatk_jar, in_path, out_path, ref_fa, interval_path,
     n_cthreads: Number of computing threads
     bqsr_table: Path to BQSR table if applying BaseRecalibrator data
   """
-  cmd = [JAVA_DIR, "-Xmx5g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
+  cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
          "-T", "PrintReads",
          "-R", ref_fa,
          "-I", in_path,
@@ -128,6 +128,7 @@ def main(gatk_jar, sample_id, ref_fa, interval_dir, out_dir, n_regions,
                                                       region_name)
   interval_path = "{}/region_{}.m2bp.intervals".format(interval_dir,
                                                        region_name)
+  start_prime = time()
   print_reads(gatk_jar, uncalibrated_bam, recal_bam, ref_fa, interval_path,
               n_cthreads, log_output, bqsr_table)
   #HaplotypeCaller
@@ -142,6 +143,10 @@ def main(gatk_jar, sample_id, ref_fa, interval_dir, out_dir, n_regions,
                    dbsnp_path, log_output)
   #Genarate VCF's
   out_vcf = out_gvcf.replace(".g.vcf",".vcf")
+  end_prime = time()
+  log_output.write("PrintRead and HC completed in {} seconds\n".format(round(end_prime-start_prime)))
+  log_output.flush()
+  fsync(log_output.fileno())
   log_output.close()
   sysexit(0)
 

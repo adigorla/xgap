@@ -1,7 +1,6 @@
 ---
 
-# This config file is specific to running the standard Winston pipeline on
-# a SGE managed cluster
+# This config file is specific to running the standard xGAP pipeline for variant calling
 
 ###########################
 ## Output Specifications ##
@@ -21,7 +20,8 @@ log-dir: "/nafs/jsul/aditya/"
 ## Resource Specifications ##
 #############################
 
-#TODO: add config option for highp, rn its defuault is TRUE
+# Scheduler type: sge, slurm or aws_slurm [CASE SENSITIVE]
+scheduler: "slurm"
 
 # Number of times a task can start before being aborted
 start-limit: "2"
@@ -37,13 +37,13 @@ n-threads: "1"
 
 # Max memory available for each  task
 #Memeory allocation coresponds to the following tasks:
-#[fastq_prep, bwa, dedup_chri, dedup, base_recal, merge_recal, bqsr_hc_gvcf, merge_bams, check]
-avail-memory: ["1G", "7500M", "7500M", "5632M", "6656M", "8G", "7500M", "1G", "512M"]
+#             [fastq_prep, bwa, dedup_chri, dedup, base_recal, merge_recal, bqsr_hc_gvcf, merge_bams, check]
+avail-memory: ["1G", "8G", "7500M", "5632M", "12G", "12G", "12G", "1G", "512M"]
 
 # Max time allotted for a task (default 12 hours)
 #Time allocation correspond to the following tasks:  
-#[fastq_prep, bwa, dedup_chri, dedup, base_recal, merge_recal, bqsr_hc_gvcf, merge_bams, check] 
-avail-time: ["18:00:00", "09:00:00", "06:00:00", "01:00:00", "00:45:00", "00:30:00", "12:00:00", "18:00:00", "00:30:00"]
+#           [fastq_prep, bwa,        dedup_chri, dedup,      base_recal, merge_recal, bqsr_hc_gvcf, merge_bams, check] 
+avail-time: ["18:00:00", "11:00:00", "06:00:00", "01:00:00", "09:45:00", "00:30:00", "12:00:00", "18:00:00", "00:30:00"]
 
 #Sequencing Platform
 seq-plat: "ILLUMINA" 
@@ -52,20 +52,13 @@ seq-plat: "ILLUMINA"
 output-disk-identifier: "devtmpfs"
 
 # Analysis will halt if disk usage greater than or equal to this value
-free-disk-threshold: "99"
+free-disk-threshold: "100"
 
 # Number of samples actively analyzed on shared queue
 shared-active-samples: "6"
 
-# Number of samples actively analyzed on highp queue
-highp-active-samples: "12"
-
-#Run task on Highp [y or n]
-#Highp allocation coresponds to the following tasks:
-#[fastq_prep, bwa, dedup_chri, dedup, base_recal, merge_recal, bqsr_hc_gvcf, merge_bams, check]
-highp-task: ["y", "y", "y", "y", "n", "n", "y", "y", "n"]
-
 #Mail notify settings
+#            [y/n,      sender address    ,      recipient address  ]
 mail-notify: ["y", "adihoffman2@gmail.com", "aditya.gorla@yahoo.com"]
 
 ##########################
@@ -80,10 +73,6 @@ bin-bwa: "/nafs/jsul/aditya/winston_depn/lib/bwa/bwa-0.7.10/bwa"
 
 # Path to GATK 3.7/3.8 jar
 gatk-jar: "/nafs/jsul/aditya/winston_depn/lib/gatk/GenomeAnalysisTK-3.8-1-0/GenomeAnalysisTK.jar"
-
-# Path to Picard jar
-# Set to /dev/null till this requirement is dropped
-picard-jar: "/nafs/jsul/aditya/winston_depn/lib/picard/picard.jar"
 
 # Path to sambamba execuatble
 # only use v0.6.6, new versions tend to unxexpectedly segfault on Xeon cores!

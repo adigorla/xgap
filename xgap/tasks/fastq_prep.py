@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
 
 """Converts input sequence files to split and compressed FASTQ files"""
 
@@ -519,7 +519,7 @@ def main(input_str, out_prefix, log_path):
   end = time()
   if output_paths:
     log_output.write("FASTQ splitting completed in "
-                     "{} seconds\n".format(end-start))
+                     "{} seconds\n".format(round(end-start, 2)))
     log_output.write("FASTQ pairs generated:\n{}\n".format(len(output_paths)))
   else:
     log_output.write("ERROR: No output generated\n")

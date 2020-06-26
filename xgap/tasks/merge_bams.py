@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
 
 """Methods for merging sorted BAM files and dedupping"""
 
@@ -132,7 +132,7 @@ def main(sample_id, out_dir, n_regions, regions_dir, log_path):
     remove(bam_list_path)
   complete_end = time()  
   log_output.write("Merged all BAMs in "
-                   "{} seconds\n".format(complete_end-complete_start))
+                   "{} seconds\n".format(round(complete_end-complete_start)))
   log_output.close()
   sysexit()
 

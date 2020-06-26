@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
 
 """Aligns reads and sorts into proper regions and coordinate order"""
 
@@ -492,7 +492,7 @@ def main(bin_bwa, n_threads, ref_fa, sample_id, out_dir, interval_dir, log_prefi
                                 output_dir, interval_paths, log_output)
   end = time()
   if output_paths:
-    log_output.write("Alignment and sorting completed in {} seconds\n".format(end-start))
+    log_output.write("Alignment and sorting completed in {} seconds\n".format(round(end-start, 2)))
   else:
     log_output.write("ERROR: No output files generated\n")
   log_output.close()

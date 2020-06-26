@@ -1,5 +1,5 @@
 """parallelized variant calling pipeline"""
 
-__version__ = "0.3.1"
+__version__ = "0.5.7"
 
 from xgap import pipeline

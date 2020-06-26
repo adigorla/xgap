@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
 
 """Generate Base Recalibration tables"""
 
@@ -45,7 +45,7 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
     n_cthreads: Number of computing threads
     bqsr_table: Path to BQSR table if using existing covariates
   """
-  cmd = [JAVA_DIR, "-Xmx2g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar,
+  cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar,
          "-T", "BaseRecalibrator",
          "-R", ref_fa,
          "-L", interval_path,
@@ -151,7 +151,7 @@ def main(gatk_jar, sample_id, out_dir, ref_fa, known_sites_str, interval_dir,
                     interval_path, n_cthreads, log_output)
   end = time()
   log_output.write("Merge chrI and BQSR completed in "
-                   "{} seconds\n".format(end-start))
+                   "{} seconds\n".format(round(end-start, 2)))
   log_output.close()
   sysexit()
 

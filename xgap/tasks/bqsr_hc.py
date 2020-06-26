@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
 
 """Apply BQSR, call variants with HaplotypeCaller and generate vcf files using GenotypeGVCF"""
 
@@ -116,6 +116,7 @@ def main(gatk_jar, sample_id, ref_fa, interval_dir, out_dir, n_regions,
          n_cthreads, dbsnp_path, log_prefix):
   log_path = "{}.{}.log".format(log_prefix, INDEX_STR)
   log_output = open(log_path, 'w')
+  start_prime = time()
   #Apply base recal
   log_output.write("Applying BQSR table\n")
   log_output.flush()
@@ -142,6 +143,10 @@ def main(gatk_jar, sample_id, ref_fa, interval_dir, out_dir, n_regions,
   #Genarate VCF's
   out_vcf = out_gvcf.replace(".g.vcf",".vcf")
   VCFgen(gatk_jar,out_gvcf,out_vcf, ref_fa,log_output)
+  end_prime = time()
+  log_output.write("PrintRead and HC completed in {} seconds\n".format(round(end_prime-start_prime, 2)))
+  log_output.flush()
+  fsync(log_output.fileno())
   log_output.close()
   sysexit(0)
 

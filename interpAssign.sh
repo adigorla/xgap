@@ -13,7 +13,7 @@ fi
 
 if [ ! -d "$1" ]
 then
-    echo -e "\n\tERROR: INVALID PATH to xgap's directory or directory dosen't exist; please provide valid path to winston's ROOT directory\n"
+    echo -e "\n\tERROR: INVALID PATH to xgap's directory or directory dosen't exist; please provide valid path to xgap's ROOT directory\n"
     exit
 elif [ ! -f "$2" ]
 then
@@ -21,7 +21,7 @@ then
     exit
 fi
 
-WINSPATH=${1}
+XGAPPATH=${1}
 
 PYPATH="#!${2}"
 
@@ -31,20 +31,22 @@ CHKPTF=checkpoint.py
 
 SETUF=setup_utils.py 
 
-if [ -f $WINSPATH/bin/xgap ]
+if [ -f $XGAPPATH/bin/xgap ]
 then
-    hashbang=$(awk 'NR==1{print;exit}' $WINSPATH/bin/xgap)
-    echo -e "\nReplacing $hashbang with $PYPATH in file ${WINSPATH}/bin/xgap"
-    sed -i'' -e "1 s|$hashbang|$PYPATH|" $WINSPATH/bin/xgap
+    hashbang=$(awk 'NR==1{print;exit}' $XGAPPATH/bin/xgap)
+    echo -e "\n\tReplacing $hashbang with $PYPATH in file ${XGAPPATH}/bin/xgap\n"
+    sed -i'' -e "1 s|$hashbang|$PYPATH|" $XGAPPATH/bin/xgap
 else
-    echo -e "\n\tERROR: the path to xgap's directory is NOT the path path to winston's ROOT directory! Please provide path to winston's ROOT directory\n"
+    echo -e "\n\tERROR: the path to xgap's directory is NOT the path path to xgap's ROOT directory! Please provide path to xgap's ROOT directory\n"
 fi
 
-for path in $(find ${WINSPATH}/xgap/ -type f -name '*.py'); do
-    if [[ "$INITF" != "`basename ${path}`" ]] && [[ "$CHKPTF" != "`basename ${path}`" ]] && [[ "$SETUF" != "`basename ${path}`" ]] && [[ "$(find ${WINSPATH}/xgap/scheduler/ -type f -name '*.py')" != *"${path}"* ]]
+for path in $(find ${XGAPPATH}/xgap/ -type f -name '*.py'); do
+    if [[ "$INITF" != "`basename ${path}`" ]] && [[ "$CHKPTF" != "`basename ${path}`" ]] && [[ "$SETUF" != "`basename ${path}`" ]] && [[ "$(find ${XGAPPATH}/xgap/scheduler/ -type f -name '*.py')" != *"${path}"* ]]
     then
 	hashbang=$(awk 'NR==1{print;exit}' $path)
-	echo -e "\nReplacing $hashbang with $PYPATH in file $path"
+	echo -e "\tReplacing $hashbang with $PYPATH in file $path\n"
 	sed -i'' -e "1 s|$hashbang|$PYPATH|" $path
     fi
 done
+
+echo -e "\n\tSuccessfully Completed!\n"
