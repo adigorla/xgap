@@ -1,1 +1,0 @@
-NA12878-ILMN-400 /ifshome/agorla/data_bucket/original_datasets/NA12878-illumina/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R1_001.fastq,/ifshome/agorla/data_bucket/original_datasets/NA12878-illumina/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R2_001.fastq
