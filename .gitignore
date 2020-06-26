@@ -2,3 +2,15 @@
 __pycache__/
 *.py[cod]
 *$py.class
+
+# text editor (vi / emacs) intermediate files
+*~
+*.*#
+
+# All dev-time config yaml files and input files except the public templates
+
+config/*.yml
+!config/temp_config.yml
+
+bin/*.txt
+!bin/input_example.txt

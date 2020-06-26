@@ -44,7 +44,7 @@ git clone --single-branch --branch master git@github.com:Adigorla/xgap.git
 This is the file where you set runtime resource and dependency configurations. This where you set the paths to external dependencies (such as GATK, BWA, etc.),  reference files (such as GRCh 37, dbsnp vcf, etc.) and intermediate/output file directories. This also the file where you configure scheduler runtime settings such as runtime and memory limits. Finally, users also get to select the number of regions to parallelize over and number of times a process can fail before analysis is halted for user intervention. Note: as a general rule of thunb, we think it's most efficient to set `n-regions` (the number of regions to parallelize over) to 2X the number of cores available for analysis. A template configuration file is already provided at `~/xgap/config/temp_config.yml`. You simplly needs to edit the file using you favourite text editor.
 
 **2. Update input file**
-This is the text file where you set the paths to input files (FASTQs or BAMs) for analysis. A template input file in provide at `~/xgap/bin/NA12878.txt`. For bacth analysis follow the same format where each line should refer to single genome. Each line of the input file should refer to a single genome in the following format depending on the input format:
+This is the text file where you set the paths to input files (FASTQs or BAMs) for analysis. An example input file in provide at `~/xgap/bin/input_example.txt`. For bacth analysis follow the same format where each line should refer to single genome. Each line of the input file should refer to a single genome in the following format depending on the input format:
 
 ```
 ### for input pair-end FASTQ files
