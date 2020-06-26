@@ -7,13 +7,13 @@
 ###########################
 
 # Directory to store all output files
-output-dir: "/nafs/jsul/aditya/"
+output-dir: "/nafs/scratch/"
 
 # Directory to store intermediate files
-working-dir: "/nafs/jsul/aditya/"
+working-dir: "/nafs/scratch/"
 
 # Directory to store logs
-log-dir: "/nafs/jsul/aditya/"
+log-dir: "/nafs/scratch/"
 
 
 #############################
@@ -59,7 +59,7 @@ shared-active-samples: "6"
 
 #Mail notify settings
 #            [y/n,      sender address    ,      recipient address  ]
-mail-notify: ["y", "adihoffman2@gmail.com", "aditya.gorla@yahoo.com"]
+mail-notify: ["y", "my.mailserv@gmail.com", "some.one@yahoo.com"]
 
 ##########################
 ## Program Dependencies ##
@@ -69,14 +69,14 @@ mail-notify: ["y", "adihoffman2@gmail.com", "aditya.gorla@yahoo.com"]
 java-dir: "/usr/bin/java"
 
 # Path to BWA executable
-bin-bwa: "/nafs/jsul/aditya/winston_depn/lib/bwa/bwa-0.7.10/bwa"
+bin-bwa: "/nafs/scratch/xgap_depn/lib/bwa/bwa-0.7.10/bwa"
 
 # Path to GATK 3.7/3.8 jar
-gatk-jar: "/nafs/jsul/aditya/winston_depn/lib/gatk/GenomeAnalysisTK-3.8-1-0/GenomeAnalysisTK.jar"
+gatk-jar: "/nafs/scratch/xgap_depn/lib/gatk/GenomeAnalysisTK-3.8-1-0/GenomeAnalysisTK.jar"
 
 # Path to sambamba execuatble
 # only use v0.6.6, new versions tend to unxexpectedly segfault on Xeon cores!
-bin-sambamba: "/nafs/jsul/aditya/winston_depn/lib/sambamba/sambamba_v0.6.6"
+bin-sambamba: "/nafs/scratch/xgap_depn/lib/sambamba/sambamba_v0.6.6"
 
 ############################
 ## Reference Dependencies ##
@@ -86,18 +86,18 @@ bin-sambamba: "/nafs/jsul/aditya/winston_depn/lib/sambamba/sambamba_v0.6.6"
 ref-type: "grch37"
 
 # Full path to reference fasta file
-ref-fasta: "/nafs/jsul/aditya/winston_depn/ref_genome/grch37/human_g1k_v37.fasta"
+ref-fasta: "/nafs/scratch/xgap_depn/ref_genome/grch37/human_g1k_v37.fasta"
 
 # Full path to reference dict file
-ref-dict: "/nafs/jsul/aditya/winston_depn/ref_genome/grch37/human_g1k_v37.dict"
+ref-dict: "/nafs/scratch/xgap_depn/ref_genome/grch37/human_g1k_v37.dict"
 
 # Full path to reference dbsnp vcf file
-dbsnp-vcf:  "/nafs/jsul/aditya/winston_depn/ref_genome/grch37/dbsnp_138.b37.vcf"
+dbsnp-vcf:  "/nafs/scratch/xgap_depn/ref_genome/grch37/dbsnp_138.b37.vcf"
 
 # Full path to reference 1000g indels vcf file
-1000g-indel-vcf: "/nafs/jsul/aditya/winston_depn/ref_genome/grch37/1000G_phase1.indels.b37.vcf"
+1000g-indel-vcf: "/nafs/jscratch/xgap_depn/ref_genome/grch37/1000G_phase1.indels.b37.vcf"
 
 # Full path to reference Mills and Devine indel vcf file
-mills-devine-indel-vcf: "/nafs/jsul/aditya/winston_depn/ref_genome/grch37/Mills_and_1000G_gold_standard.indels.b37.vcf"
+mills-devine-indel-vcf: "/nafs/scratch/xgap_depn/ref_genome/grch37/Mills_and_1000G_gold_standard.indels.b37.vcf"
 
 ...
