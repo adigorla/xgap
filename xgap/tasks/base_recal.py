@@ -4,6 +4,7 @@
 
 try:
   from subprocess import run
+  from subprocess import check_output
 except ImportError:
   # Python 2.7 compatibility
   from subprocess import call
@@ -45,20 +46,40 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
     n_cthreads: Number of computing threads
     bqsr_table: Path to BQSR table if using existing covariates
   """
+  #Checks to see what version GATK user is using 
+  output=checkout([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
+  charstr=output.decode('ASCII')
+  gatk-ver="4"
+  for i, c in enumerate(charstr):
+    if c.isdigit():
+        gatk-ver=(charstr[i])
+        break
+  #GATK Version header is the first num  char in the output string for --version command 
   cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar,
-         "-T", "BaseRecalibrator",
+         "BaseRecalibrator",
          "-R", ref_fa,
          "-L", interval_path,
          "-I", in_path,
-         "-o", out_path,
-         "-nct", n_cthreads]
+         "-O", out_path]
+  if(gatk-ver="3"):
+	cmd.insert(5, "-T")
+	cmd.append("-nct")
+	cmd.append(n_cthreads) 
   for sites in known_sites:
-    cmd.append("-knownSites")
-    cmd.append(sites)
+    if(gatk-ver="3"):
+    	cmd.append("-knownSites")
+    	cmd.append(sites)
+    elif(gatk-ver="4"): 
+	cmd.append("--known-sites")
+	cmd.append(sites)
   # If doing second pass to analyze covariation after recal
   if bqsr_table:
-    cmd.append("-BQSR")
-    cmd.append(bqsr_table)
+    if(gatk-ver="3"):
+    	cmd.append("-BQSR")
+    	cmd.append(bqsr_table)
+    elif(gatk-ver="4"): 
+	cmd.append("-bqsr")
+	cmd.append(bqsr_table)
   start = time()
   run(cmd, stdout=log_output, stderr=log_output)
   end = time()

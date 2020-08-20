@@ -37,24 +37,27 @@ def print_reads(gatk_jar, in_path, out_path, ref_fa, interval_path,
     n_cthreads: Number of computing threads
     bqsr_table: Path to BQSR table if applying BaseRecalibrator data
     """
-  if gatk-ver="GATK3":
-        cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-                "-T", "PrintReads",
-                "-R", ref_fa,
-                "-I", in_path,
-                "-L", interval_path,
-                "-o", out_path,
-                "-nct", n_cthreads]
-  elif gatk-ver="GATK4":
-        cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-                "PrintReads",
-                "-R", ref_fa,
-                "-I", in_path,
-                "-L", interval_path,
-                "-O", out_path]
-  if bqsr_table:
-    cmd.append("-BQSR")
-    cmd.append(bqsr_table)
+  output=checkout([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
+  charstr=output.decode('ASCII')
+  gatk-ver="4"
+  for i, c in enumerate(charstr):
+    if c.isdigit():
+        gatk-ver=(charstr[i])
+        break
+  #PrintReads might not be the tool
+  cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
+        "PrintReads",
+        "-R", ref_fa,
+        "-I", in_path,
+        "-L", interval_path,
+        "-O", out_path]
+  if(gatk-ver="3"):
+        cmd.insert(5,"-T")
+        cmd.append("-nct")
+        cmd.append(n_cthreads)
+        if bqsr_table:
+                cmd.append("-BQSR")
+                cmd.append(bqsr_table)
   start = time()
   run(cmd, stdout=log_output, stderr=log_output)
   end = time()

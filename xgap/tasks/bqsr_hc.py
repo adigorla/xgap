@@ -37,25 +37,27 @@ def print_reads(gatk_jar, in_path, out_path, ref_fa, interval_path,
     n_cthreads: Number of computing threads
     bqsr_table: Path to BQSR table if applying BaseRecalibrator data
   """
-  if gatk-ver="GATK3":
-  	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-      		"-T", "PrintReads",
-         	"-R", ref_fa,
-         	"-I", in_path,
-         	"-L", interval_path,
-         	"-o", out_path,
-         	"-nct", n_cthreads]
-  elif gatk-ver="GATK4":
-	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-                "PrintReads",
-                "-R", ref_fa,
-                "-I", in_path,
-                "-L", interval_path,
-                "-O", out_path]
-
-  if bqsr_table:
-    cmd.append("-BQSR")
-    cmd.append(bqsr_table)
+  output=checkout([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
+  charstr=output.decode('ASCII')
+  gatk-ver="4"
+  for i, c in enumerate(charstr):
+    if c.isdigit():
+        gatk-ver=(charstr[i])
+        break
+  #PrintReads might not be the tool
+  cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
+        "PrintReads",
+        "-R", ref_fa,
+  	"-I", in_path,
+        "-L", interval_path,
+        "-O", out_path]
+  if(gatk-ver="3"):
+	cmd.insert(5,"-T")
+	cmd.append("-nct")
+	cmd.append(n_cthreads)
+  	if bqsr_table:
+    		cmd.append("-BQSR")
+    		cmd.append(bqsr_table)
   start = time()
   run(cmd, stdout=log_output, stderr=log_output)
   end = time()
@@ -76,31 +78,33 @@ def haplotype_caller(gatk_jar, in_path, out_path, ref_fa, interval_path,
     dbsnp_path: Path to dbsnp VCF file
     log_output: File handle for log file
   """
-  if gatk-ver="GATK3":
-  	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-        	"-T", "HaplotypeCaller",
-        	"-R", ref_fa,
-         	"-I", in_path,
-         	"-o", out_path,
-         	"-L", interval_path,
-         	"--dbsnp", dbsnp_path,
-         	"--emitRefConfidence", "GVCF",
-         	"--variant_index_type", "LINEAR",
-         	"--variant_index_parameter", "128000",
-         	"-dt", "NONE",
-         	"-baq", "OFF",
-         	"-mbq", "17"]
-  elif gatk-ver="GATK4":
-	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
+  output=checkout([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
+  charstr=output.decode('ASCII')
+  gatk-ver="4"
+  for i, c in enumerate(charstr):
+    if c.isdigit():
+        gatk-ver=(charstr[i])
+        break
+  cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
                 "HaplotypeCaller",
                 "-R", ref_fa,
                 "-I", in_path,
                 "-O", out_path,
                 "-L", interval_path,
                 "--dbsnp", dbsnp_path,
-                "--emit-ref-confidence", "GVCF",
-                "-mbq", "17"]
- 
+                "--emit-ref-confidence", "GVCF"]
+  if(gatk-ver="3"):
+  	cmd.insert(5,"-T")
+	cmd.append("--variant_index_type")
+	cmd.append("LINEAR")
+	cmd.append("--variant_index_parameter")
+	cmd.append("128000")
+	cmd.append("-dt")
+	cmd.append("NONE")
+	cmd.append("-baq")
+	cmd.append("OFF")
+  cmd.append("mbq")
+  cmd.append("17")
   start = time()
   run(cmd, stdout=log_output, stderr=log_output)
   end = time()
@@ -119,20 +123,27 @@ def VCFgen(gatk_jar,in_gvcf,out_vcf, ref_fa,log_output):
     ref_fa: Path to reference fasta file
     log_output: File handle for log file
   """
-  if gatk-ver="GATK3":
-  	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-         	"-T", "GenotypeGVCFs",
-         	"-R", ref_fa,
-         	"--variant", in_gvcf,
-         	"--out", out_vcf,
-         	"--useNewAFCalculator"]
-  elif gatk-ver="GATK4": 
-	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-                "GenotypeGVCFs",
-                "-R", ref_fa,
-                "--variant", in_gvcf,
-                "-O", out_vcf,
-                "-new-qual", "TRUE"]
+  output=checkout([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
+  charstr=output.decode('ASCII')
+  gatk-ver="4"
+  for i, c in enumerate(charstr):
+    if c.isdigit():
+        gatk-ver=(charstr[i])
+        break
+  cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
+	"GenotypeGVCFs",
+	"-R", ref_fa,
+        "--variant", in_gvcf]
+  if(gatk-ver="3"):
+	cmd.insert(5,"-T")
+	cmd.append("--out")
+	cmd.append(out_vcf)
+	cmd.append("--useNewAFCalculator")
+  if(gatk-ver="4"):
+	cmd.append("-O")
+	cmd.append(out_vcf)
+	cmd.append("-new-qual")
+	cmd.append("TRUE")
   start = time()
   run(cmd, stdout=log_output, stderr=log_output)
   end = time()
