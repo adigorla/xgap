@@ -24,9 +24,16 @@ def bqsr_gather(gatk_jar, in_paths, out_path, log_output=stdout):
     log_output: File handle for log file
   """
   # Tool name subject to change.
-  if gatk-ver="GATK3":
+  output=checkout([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
+  charstr=output.decode('ASCII')
+  gatk-ver="4"
+  for i, c in enumerate(charstr):
+    if c.isdigit():
+        gatk-ver=(charstr[i])
+        break
+  if gatk-ver="3":
     gather_tool = "org.broadinstitute.gatk.tools.GatherBqsrReports"
-  elif gatk-ver="GATK4":
+  elif gatk-ver="4":
     gather_tool = "GatherBQSRReports"
   cmd = [JAVA_DIR, "-Xmx4g", "-Djava.awt.headless=true", "-cp", gatk_jar, gather_tool]
   for in_path in in_paths:
