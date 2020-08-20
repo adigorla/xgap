@@ -36,14 +36,22 @@ def print_reads(gatk_jar, in_path, out_path, ref_fa, interval_path,
     log_output: File handle for log file.
     n_cthreads: Number of computing threads
     bqsr_table: Path to BQSR table if applying BaseRecalibrator data
-  """
-  cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-         "-T", "PrintReads",
-         "-R", ref_fa,
-         "-I", in_path,
-         "-L", interval_path,
-         "-o", out_path,
-         "-nct", n_cthreads]
+    """
+  if gatk-ver="GATK3":
+        cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
+                "-T", "PrintReads",
+                "-R", ref_fa,
+                "-I", in_path,
+                "-L", interval_path,
+                "-o", out_path,
+                "-nct", n_cthreads]
+  elif gatk-ver="GATK4":
+        cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
+                "PrintReads",
+                "-R", ref_fa,
+                "-I", in_path,
+                "-L", interval_path,
+                "-O", out_path]
   if bqsr_table:
     cmd.append("-BQSR")
     cmd.append(bqsr_table)
@@ -67,19 +75,32 @@ def haplotype_caller(gatk_jar, in_path, out_path, ref_fa, interval_path,
     dbsnp_path: Path to dbsnp VCF file
     log_output: File handle for log file
   """
-  cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-         "-T", "HaplotypeCaller",
-         "-R", ref_fa,
-         "-I", in_path,
-         "-o", out_path,
-         "-L", interval_path,
-         "--dbsnp", dbsnp_path,
-         "-dt", "NONE",
-         "-baq", "OFF",
-         "-mbq", "17",
-         "--excludeAnnotation", "BaseQualityRankSumTest", "--excludeAnnotation", "MappingQualityRankSumTest", "--excludeAnnotation", "ReadPosRankSumTest",
-         "-stand_call_conf", "50",
-         "-pairHMM", "VECTOR_LOGLESS_CACHING"]
+  if gatk-ver="GATK3":
+  	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
+         	"-T", "HaplotypeCaller",
+         	"-R", ref_fa,
+         	"-I", in_path,
+         	"-o", out_path,
+         	"-L", interval_path,
+         	"--dbsnp", dbsnp_path,
+         	"-dt", "NONE",
+         	"-baq", "OFF",
+         	"-mbq", "17",
+         	"--excludeAnnotation", "BaseQualityRankSumTest", "--excludeAnnotation", "MappingQualityRankSumTest", "--excludeAnnotation", "ReadPosRankSumTest",
+         	"-stand_call_conf", "50",
+         	"-pairHMM", "VECTOR_LOGLESS_CACHING"]
+  elif gatk-ver="GATK4":
+	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
+                "HaplotypeCaller",
+                "-R", ref_fa,
+                "-I", in_path,
+                "-O", out_path,
+                "-L", interval_path,
+                "--dbsnp", dbsnp_path,
+                "-mbq", "17",
+                "-AX", "BaseQualityRankSumTest", "-AX", "MappingQualityRankSumTest", "-AX", "ReadPosRankSumTest",
+                "-stand-call-conf", "50",
+                "-pairHMM", "VECTOR_LOGLESS_CACHING"]
   start = time()
   run(cmd, stdout=log_output, stderr=log_output)
   end = time()
@@ -98,12 +119,20 @@ def VCFgen(gatk_jar,in_gvcf,out_vcf, ref_fa,log_output):
     ref_fa: Path to reference fasta file
     log_output: File handle for log file
   """
-  cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-         "-T", "GenotypeGVCFs",
-         "-R", ref_fa,
-         "--variant", in_gvcf,
-         "--out", out_vcf,
-         "--useNewAFCalculator"]
+  if gatk-ver="GATK3":
+        cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
+                "-T", "GenotypeGVCFs",
+                "-R", ref_fa,
+                "--variant", in_gvcf,
+                "--out", out_vcf,
+                "--useNewAFCalculator"]
+  elif gatk-ver="GATK4":
+        cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
+                "GenotypeGVCFs",
+                "-R", ref_fa,
+                "--variant", in_gvcf,
+                "-O", out_vcf,
+                "-new-qual", "TRUE"]
   start = time()
   run(cmd, stdout=log_output, stderr=log_output)
   end = time()
