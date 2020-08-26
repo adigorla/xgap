@@ -356,6 +356,7 @@ class TaskDedup(Task):
         log_paths.append([log_path])
     return log_paths
 
+  
 class TaskRecal(Task):
   error_terms = [
                  "ERROR",
@@ -602,6 +603,47 @@ class TaskBqsrHc(Task):
       log_paths.append([log_path])
     return log_paths
 
+class TaskVQSR(Task):
+  error_terms = { 
+                  "ERROR",
+                  "Exception"
+                }
+  def run(self, rerun_indicies=None):
+    job_name="VQSR_{}".format(self.sample_id)
+    log_path = "{}/VQSR.log".format(self.log_dir)
+    log_dir="{}/VQSR/".format(self.log_dir)
+    if not path.isdir(log_dir):
+      mkdir(log_dir)
+    working_dir = self.config["working-dir"]
+    gatk_jar=self.config["gatk-jar"]
+    java_dir = self.config["java-dir"]
+    bcftools_path=self.config["bcftools-path"]
+    cmd = "{}/VQSR.py {} {} {} {} {}".format(task_dir,
+                                                   gatk_jar,
+                                                   bcftools_path,
+                                                   self.sample_id,
+                                                   self.out_dir,
+                                                   log_path)
+    mem = self.config["avail-memory"][7]
+    runtime = self.config["avail-time"][7]
+    num_tasks = 1
+    log_output = "/dev/null"
+    job_ids = [task_scheduler.submit_job(job_name, cmd, mem, runtime, log_output,
+                                         num_tasks)]
+    submit_checkpoint(self, job_ids)
+  def clean_up(self):
+    
+  def gen_output_paths(self):
+    output_paths = [[]]
+    output_paths[0].append("{}/vcfs/{}_snp.recalibrated.vcf.gz".format(self.out_dir,
+                                                           self.sample_id))
+    return output_paths
+
+  def gen_log_paths(self):
+    log_paths = [["{}/VQSR/VQSR.log".format(self.log_dir)]]
+    return log_paths	
+
+
 class TaskMergeBams(Task):
   error_terms = [
                  "ERROR",
@@ -736,6 +778,7 @@ def main(sampleid, samplepath,configpath):
                 TaskRecal,
                 TaskMergeRecal,
                 TaskBqsrHc,
+		TaskVQSR,
 #                TaskMergeBams,
                 TaskFinish
                ]
@@ -756,6 +799,7 @@ if __name__ == "__main__":
               TaskRecal,
               TaskMergeRecal,
               TaskBqsrHc,
+	      TaskVQSR,
 #              TaskMergeBams,
               TaskFinish
               ]

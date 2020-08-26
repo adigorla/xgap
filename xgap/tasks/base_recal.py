@@ -47,7 +47,7 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
     bqsr_table: Path to BQSR table if using existing covariates
   """
   #Checks to see what version GATK user is using 
-  output=checkout([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
+  output=check_output([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
   charstr=output.decode('ASCII')
   gatk-ver="4"
   for i, c in enumerate(charstr):
