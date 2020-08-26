@@ -4,6 +4,7 @@
 """IMP NOTE: This BQSR report merge script only works with GATK 3.7 or above"""
 try:
   from subprocess import run
+  from subprocess import check_output
 except ImportError:
   # Python 2.7 compatibility
   from subprocess import call
@@ -24,18 +25,19 @@ def bqsr_gather(gatk_jar, in_paths, out_path, log_output=stdout):
     log_output: File handle for log file
   """
   # Tool name subject to change.
-  output=checkout([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
-  charstr=output.decode('ASCII')
+  output=check_out([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
+  charstr=output.decode('UTS_8')
   gatk-ver="4"
   for i, c in enumerate(charstr):
     if c.isdigit():
         gatk-ver=(charstr[i])
         break
+  cmd = [JAVA_DIR, "-Xmx4g", "-Djava.awt.headless=true", gatk_jar, gather_tool]
   if gatk-ver="3":
+    cmd.insert(3, "-cp")
     gather_tool = "org.broadinstitute.gatk.tools.GatherBqsrReports"
   elif gatk-ver="4":
     gather_tool = "GatherBQSRReports"
-  cmd = [JAVA_DIR, "-Xmx4g", "-Djava.awt.headless=true", "-cp", gatk_jar, gather_tool]
   for in_path in in_paths:
     cmd.append("I={}".format(in_path))
   cmd.append("O={}".format(out_path))

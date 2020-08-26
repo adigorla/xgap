@@ -48,7 +48,7 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
   """
   #Checks to see what version GATK user is using 
   output=check_output([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
-  charstr=output.decode('ASCII')
+  charstr=output.decode('UTS_8')
   gatk-ver="4"
   for i, c in enumerate(charstr):
     if c.isdigit():
@@ -62,7 +62,7 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
          "-I", in_path,
          "-O", out_path]
   if(gatk-ver="3"):
-	cmd.insert(5, "-T")
+	cmd.insert(6, "-T")
 	cmd.append("-nct")
 	cmd.append(n_cthreads) 
   for sites in known_sites:
