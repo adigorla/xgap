@@ -7,4 +7,4 @@ from xgap.tasks import fastq_prep
 from xgap.tasks import merge_bams
 from xgap.tasks import merge_dedup
 from xgap.tasks import merge_recal
-from xgap.tasks import VQSR
+from xgap.tasks import variant_filter
