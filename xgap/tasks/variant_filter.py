@@ -26,13 +26,15 @@ elif 'PBS_ARRAYID' in environ:
 if __name__ == "__main__":
   JAVA_DIR = argv[6]
 
-def MergeVCFS(bcftools-path, in_path, out_path): 
+def MergeVCFS(bcftools-path, in_list, out_path): 
 
-	cmd = [bcftools-path, 
-		"--force-samples",
-		"-I", in_path, 
-		"-m", "all",
-		"-o", out_path]
+	cmd = [bcftools-path, "concat",
+		"--allow-overlaps", 
+		"--remove-duplicates",
+		"-0","z", 
+		"-o", out_path,
+		"-I"]
+	cmd.extend(in_list)
 	start = time()
         run(cmd, stdout=log_output, stderr=log_output)
         end = time()
@@ -168,14 +170,15 @@ def main(gatk_jar, bcftools, sample_id, out_dir, log_prefix)
         log_output.flush()
         fsync(log_output.fileno())
 	bcftools_path=bcftools
-	vcfs="{}/vcf/{}.vcf.gz".format(out_dir, sample_id)
-	output="{}/vcf/{}_merged.vcf.gz".format(out_dir, sample_id)
+	#Use Glob
+	glob("{}/vcf/{}_region_*.vcf.gz".format(out_dir, sample_id)) 
+	output="{}/vcf/{}.vcf.gz".format(out_dir, sample_id)
 	MergeVCFS(bcftools_path, vcfs, output)
 	#Variant Filtration
 	log_output.write("Applying Variant Filtration\n")
   	log_output.flush()
   	fsync(log_output.fileno())
-	cohortvcf="{}/vcf/{}_merged.vcf.gz".format(out_dir, sample_id)
+	cohortvcf="{}/vcf/{}.vcf.gz".format(out_dir, sample_id)
 	cohortout="{}/vcf/{}_excesshet.vcf.gz".format(out_dir, sample_id)
 	VariantFiltration(gatk_jar, cohortvcf, corhortout, log_output)
 	#MakeSitesonlyVCF
