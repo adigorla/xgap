@@ -39,13 +39,13 @@ def print_reads(gatk_jar, in_path, out_path, ref_fa, interval_path,
     bqsr_table: Path to BQSR table if applying BaseRecalibrator data
     """
   output=check_out([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
-  charstr=output.decode('ASCII')
-  gatk-ver="4"
+  charstr=output.decode('utf-8')
+  gatk_ver="4"
   for i, c in enumerate(charstr):
     if c.isdigit():
-        gatk-ver=(charstr[i])
+        gatk_ver=(charstr[i])
         break
-  if(gatk-ver="4"): 
+  if(gatk_ver="4"): 
 	 cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
                 "ApplyBQSR",
                 "-R", ref_fa,
@@ -54,7 +54,7 @@ def print_reads(gatk_jar, in_path, out_path, ref_fa, interval_path,
                 "--bqsr-recal-file", bqsr_table,
                 "-O", out_path]
   #PrintReads might not be the tool
-  if(gatk-ver="3"):
+  if(gatk_ver="3"):
 	 cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
         "PrintReads",
         "-R", ref_fa,
@@ -88,13 +88,13 @@ def haplotype_caller(gatk_jar, in_path, out_path, ref_fa, interval_path,
     log_output: File handle for log file
   """
   output=check_out([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
-  charstr=output.decode('UTS_8')
-  gatk-ver="4"
+  charstr=output.decode('utf-8')
+  gatk_ver="4"
   for i, c in enumerate(charstr):
     if c.isdigit():
-        gatk-ver=(charstr[i])
+        gatk_ver=(charstr[i])
         break
-  if gatk-ver="3":
+  if gatk_ver="3":
   	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
          	"-T", "HaplotypeCaller",
          	"-R", ref_fa,
@@ -108,7 +108,7 @@ def haplotype_caller(gatk_jar, in_path, out_path, ref_fa, interval_path,
          	"--excludeAnnotation", "BaseQualityRankSumTest", "--excludeAnnotation", "MappingQualityRankSumTest", "--excludeAnnotation", "ReadPosRankSumTest",
          	"-stand_call_conf", "50",
          	"-pairHMM", "VECTOR_LOGLESS_CACHING"]
-  elif gatk-ver="4":
+  elif gatk_ver="4":
 	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
                 "HaplotypeCaller",
                 "-R", ref_fa,
@@ -139,22 +139,22 @@ def VCFgen(gatk_jar,in_gvcf,out_vcf, ref_fa,log_output):
     log_output: File handle for log file
   """
   output=check_out([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
-  charstr=output.decode('UTS_8')
-  gatk-ver="4"
+  charstr=output.decode('utf-8')
+  gatk_ver="4"
   for i, c in enumerate(charstr):
     if c.isdigit():
-        gatk-ver=(charstr[i])
+        gatk_ver=(charstr[i])
         break
   cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
         "GenotypeGVCFs",
         "-R", ref_fa,
         "--variant", in_gvcf]
-  if(gatk-ver="3"):
+  if(gatk_ver="3"):
         cmd.insert(6,"-T")
         cmd.append("--out")
         cmd.append(out_vcf)
         cmd.append("--useNewAFCalculator")
-  if(gatk-ver="4"):
+  if(gatk_ver="4"):
         cmd.append("-O")
         cmd.append(out_vcf)
         cmd.append("-new-qual")

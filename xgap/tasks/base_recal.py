@@ -49,10 +49,10 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
   #Checks to see what version GATK user is using 
   output=check_output([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
   charstr=output.decode('UTS_8')
-  gatk-ver="4"
+  gatk_ver="4"
   for i, c in enumerate(charstr):
     if c.isdigit():
-        gatk-ver=(charstr[i])
+        gatk_ver=(charstr[i])
         break
   #GATK Version header is the first num  char in the output string for --version command 
   cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar,
@@ -61,12 +61,12 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
          "-L", interval_path,
          "-I", in_path,
          "-O", out_path]
-  if(gatk-ver="3"):
+  if(gatk_ver="3"):
 	cmd.insert(6, "-T")
 	cmd.append("-nct")
 	cmd.append(n_cthreads) 
   for sites in known_sites:
-    if(gatk-ver="3"):
+    if(gatk_ver="3"):
     	cmd.append("-knownSites")
     	cmd.append(sites)
     elif(gatk-ver="4"): 
@@ -74,10 +74,10 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
 	cmd.append(sites)
   # If doing second pass to analyze covariation after recal
   if bqsr_table:
-    if(gatk-ver="3"):
+    if(gatk_ver="3"):
     	cmd.append("-BQSR")
     	cmd.append(bqsr_table)
-    elif(gatk-ver="4"): 
+    elif(gatk_ver="4"): 
 	cmd.append("-bqsr")
 	cmd.append(bqsr_table)
   start = time()

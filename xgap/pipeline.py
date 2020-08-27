@@ -608,13 +608,17 @@ class TaskVQSR(Task):
                   "ERROR",
                   "Exception"
                 }
+  success_terms = {}
   def run(self, rerun_indicies=None):
     job_name="VQSR_{}".format(self.sample_id)
-    log_path = "{}/VQSR.log".format(self.log_dir)
-    log_dir="{}/VQSR/".format(self.log_dir)
+    log_path = "{}/BqsrHC/vqsr.log".format(self.log_dir)
+    log_dir="{}/BqsrHC/".format(self.log_dir)
     if not path.isdir(log_dir):
       mkdir(log_dir)
     working_dir = self.config["working-dir"]
+    dbsnp = self.config["dbsnp-vcf"]
+    1000g = self.config["1000g-indel-vcf"]
+    mills = self.config["mills-devine-indel-vcf"]
     gatk_jar=self.config["gatk-jar"]
     java_dir = self.config["java-dir"]
     bcftools_path=self.config["bcftools-path"]
@@ -623,7 +627,7 @@ class TaskVQSR(Task):
                                                    bcftools_path,
                                                    self.sample_id,
                                                    self.out_dir,
-                                                   log_path)
+                                                   log_path, mills, dbsnp, 1000g)
     mem = self.config["avail-memory"][7]
     runtime = self.config["avail-time"][7]
     num_tasks = 1
@@ -632,15 +636,26 @@ class TaskVQSR(Task):
                                          num_tasks)]
     submit_checkpoint(self, job_ids)
   def clean_up(self):
-    
+    pass
+ 
   def gen_output_paths(self):
     output_paths = [[]]
-    output_paths[0].append("{}/vcfs/{}_snp.recalibrated.vcf.gz".format(self.out_dir,
+    output_paths[0].append("{}/vcf/{}.vcf.gz".format(self.out_dir, self.sample_id))
+    output_paths[0].append("{}/vcf/{}_excesshet.vcf.gz".format(self.out_dir, self.sample_id))
+    output_paths[0].append("{}/vcf/{}_sitesonly.vcf.gz".format(self.out_dir, self.sample_id))
+    output_paths[0].append("{}/vcf/{}_indels.recal".format(self.out_dir, self.sample_id))
+    output_paths[0].append("{}/vcf/{}_indels.tranches".format(self.out_dir, self.sample_id))
+    output_paths[0].append("{}/vcf/{}_snps.tranches".format(self.out_dir, self.sample_id))
+    output_paths[0].append("{}/vcf/{}_snps.recal".format(self.out_dir, self.sample_id))
+    #Append all output paths, all appended to output_paths[0]
+    output_paths[0].append("{}/vcf/{}_snp.recalibrated.vcf.gz".format(self.out_dir,
+                                                           self.sample_id))
+    output_paths[0].append("{}/vcf/{}_indel.recalibrated.vcf.gz".format(self.out_dir,
                                                            self.sample_id))
     return output_paths
 
   def gen_log_paths(self):
-    log_paths = [["{}/VQSR/VQSR.log".format(self.log_dir)]]
+    log_paths = [["{}/BqsrHC/vqsr.log".format(self.log_dir)]]
     return log_paths	
 
 
