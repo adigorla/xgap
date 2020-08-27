@@ -157,22 +157,7 @@ def SNPApplyVQSR(gatk_jar, variants, recalfile, tranches, out_path, log_output=s
         log_output.flush()
         fsync(log_output.fileno())
 
-def main(gatk_jar, sample_id, out_dir, log_prefix)elf.sample_id,
-                                                   self.out_dir,
-                                                   n_regions,
-                                                   interval_dir,
-                                                   log_path)
-    mem = self.config["avail-memory"][7]
-    runtime = self.config["avail-time"][7]
-    num_tasks = 1
-    log_output = "/dev/null"
-    job_ids = [task_scheduler.submit_job(job_name, cmd, mem, runtime, log_output,
-                                         num_tasks)]
-    submit_checkpoint(self, job_ids)
-
-	log_path = "{}.{}.log".format(log_prefix, INDEX_STR)
- 	log_output = open(log_path, 'w')
-  	start_prime = time()
+def main(gatk_jar, sample_id, out_dir, log_prefix)
 	#Merge VCFs 
 	log_output.write("Applying Variant Filtration\n")
         log_output.flush()
@@ -203,19 +188,6 @@ def main(gatk_jar, sample_id, out_dir, log_prefix)elf.sample_id,
         IndelVariantRecalibrator(gatk_jar, cohortvcf, corhortout, tranches,log_output)
 	log_output.write("Calculating VQSLOD tranches for snps\n")
         log_output.flush()
- cmd = "{}/merge_bams.py {} {} {} {} {}".format(task_dir,
-                                                   self.sample_id,
-                                                   self.out_dir,
-                                                   n_regions,
-                                                   interval_dir,
-                                                   log_path)
-    mem = self.config["avail-memory"][7]
-    runtime = self.config["avail-time"][7]
-    num_tasks = 1
-    log_output = "/dev/null"
-    job_ids = [task_scheduler.submit_job(job_name, cmd, mem, runtime, log_output,
-                                         num_tasks)]
-    submit_checkpoint(self, job_ids)
         fsync(log_output.fileno())
         cohortvcf="{}/vcf/{}_sitesonly.vcf.gz".format(out_dir, sample_id)
         cohortout="{}/vcf/{}_snps.recal".format(out_dir, sample_id)
