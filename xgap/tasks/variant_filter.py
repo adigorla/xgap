@@ -137,7 +137,12 @@ def IndelApplyVQSR(gatk_jar, variants, recalfile, tranches, out_path, log_output
         run(cmd, stdout=log_output, stderr=log_output)
         end = time()
         log_output.write("IndelApplyVQSR completed in {} seconds\n".format(end-start))
+Fs 
+        log_output.write("Applying Variant Filtration\n")
         log_output.flush()
+        fsync(log_output.fileno())
+        vcfs="{}/vcf/{}.vcf.gz".format(out_dir, sample_id)
+        output="{}/vcf/{}_merged.vcf.gz".format(out_dir, sample_id)
         fsync(log_output.fileno())
 
 def SNPApplyVQSR(gatk_jar, variants, recalfile, tranches, out_path, log_output=stdout):
@@ -157,13 +162,15 @@ def SNPApplyVQSR(gatk_jar, variants, recalfile, tranches, out_path, log_output=s
         log_output.flush()
         fsync(log_output.fileno())
 
-def main(gatk_jar, sample_id, out_dir, log_prefix)
+def main(gatk_jar, bcftools, sample_id, out_dir, log_prefix)
 	#Merge VCFs 
-	log_output.write("Applying Variant Filtration\n")
+	log_output.write("Merging VCFs\n")
         log_output.flush()
         fsync(log_output.fileno())
+	bcftools_path=bcftools
 	vcfs="{}/vcf/{}.vcf.gz".format(out_dir, sample_id)
 	output="{}/vcf/{}_merged.vcf.gz".format(out_dir, sample_id)
+	MergeVCFS(bcftools_path, vcfs, output)
 	#Variant Filtration
 	log_output.write("Applying Variant Filtration\n")
   	log_output.flush()
