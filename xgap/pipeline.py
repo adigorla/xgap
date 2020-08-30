@@ -617,7 +617,7 @@ class TaskVQSR(Task):
       mkdir(log_dir)
     working_dir = self.config["working-dir"]
     dbsnp = self.config["dbsnp-vcf"]
-    1000g = self.config["1000g-indel-vcf"]
+    thoug = self.config["1000g-indel-vcf"]
     mills = self.config["mills-devine-indel-vcf"]
     gatk_jar=self.config["gatk-jar"]
     java_dir = self.config["java-dir"]
@@ -627,7 +627,7 @@ class TaskVQSR(Task):
                                                    bcftools_path,
                                                    self.sample_id,
                                                    self.out_dir,
-                                                   log_path, mills, dbsnp, 1000g)
+                                                   log_path, mills, dbsnp, thoug)
     mem = self.config["avail-memory"][7]
     runtime = self.config["avail-time"][7]
     num_tasks = 1

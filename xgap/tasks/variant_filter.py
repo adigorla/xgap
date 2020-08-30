@@ -198,7 +198,7 @@ def main(gatk_jar, bcftools, sample_id, out_dir, log_prefix, mills, dbsnp, 1000g
         cohortvcf="{}/vcf/{}_sitesonly.vcf.gz".format(out_dir, sample_id)
         cohortout="{}/vcf/{}_snps.recal".format(out_dir, sample_id)
         tranches="{}/vcf/{}_snps.tranches".format(out_dir, sample_id)
-        SNPVariantRecalibrator(gatk_jar, cohortvcf, corhortout, tranches, 1000g, dbsnp, log_output)
+        SNPVariantRecalibrator(gatk_jar, cohortvcf, corhortout, tranches, thoug, dbsnp, log_output)
 	#Apply VQSR
 	log_output.write("Applying VQSR to Indels\n")
         log_output.flush()
@@ -226,8 +226,8 @@ if __name__ == "__main__":
 	log_prefix = argv[5]
         mills = argv[6]
 	dbsnp = argv[7]
-	1000g = argv[8]
-	main(gatk_jar, bcftools, sample_id, out_dir, log_prefix, mills, dbsnp, 1000g)
+	thoug = argv[8]
+	main(gatk_jar, bcftools, sample_id, out_dir, log_prefix, mills, dbsnp, thoug)
 
 
 
