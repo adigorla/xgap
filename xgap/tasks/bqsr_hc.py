@@ -1,4 +1,4 @@
-#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
+#!/u/local/apps/python/3.7.2/bin/python3
 
 """Apply BQSR, call variants with HaplotypeCaller and generate vcf files using GenotypeGVCF"""
 
@@ -40,34 +40,34 @@ def print_reads(gatk_jar, in_path, out_path, ref_fa, interval_path,
   """
   output=check_output([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
   charstr=output.decode('utf-8')
-  gatk-ver="4"
+  gatk_ver="4"
   for i, c in enumerate(charstr):
     if c.isdigit():
         gatk_ver=(charstr[i])
         break
   #PrintReads might not be the tool
-  if(gatk_ver="4"):
-	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
+  if(gatk_ver=="4"):
+    cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
 		"ApplyBQSR", 
 		"-R", ref_fa,
 		"-I", in_path,
 		"-L", interval_path,
 		"--bqsr-recal-file", bqsr_table,
 		"-O", out_path]
-  if(gatk_ver="3"):
-	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
+  if(gatk_ver=="3"):
+    cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
         "PrintReads",
         "-R", ref_fa,
         "-I", in_path,
         "-L", interval_path,
         "-O", out_path]
 
-	cmd.insert(6,"-T")
-	cmd.append("-nct")
-	cmd.append(n_cthreads)
-  	if bqsr_table:
-    		cmd.append("-BQSR")
-    		cmd.append(bqsr_table)
+    cmd.insert(6,"-T")
+    cmd.append("-nct")
+    cmd.append(n_cthreads)
+    if bqsr_table:
+      cmd.append("-BQSR")
+      cmd.append(bqsr_table)
   start = time()
   run(cmd, stdout=log_output, stderr=log_output)
   end = time()
@@ -103,16 +103,16 @@ def haplotype_caller(gatk_jar, in_path, out_path, ref_fa, interval_path,
                 "-L", interval_path,
                 "--dbsnp", dbsnp_path,
                 "--emit-ref-confidence", "GVCF"]
-  if(gatk_ver="3"):
-  	cmd.insert(6,"-T")
-	cmd.append("--variant_index_type")
-	cmd.append("LINEAR")
-	cmd.append("--variant_index_parameter")
-	cmd.append("128000")
-	cmd.append("-dt")
-	cmd.append("NONE")
-	cmd.append("-baq")
-	cmd.append("OFF")
+  if(gatk_ver=="3"):
+    cmd.insert(6,"-T")
+    cmd.append("--variant_index_type")
+    cmd.append("LINEAR")
+    cmd.append("--variant_index_parameter")
+    cmd.append("128000")
+    cmd.append("-dt")
+    cmd.append("NONE")
+    cmd.append("-baq")
+    cmd.append("OFF")
   cmd.append("mbq")
   cmd.append("17")
   start = time()
@@ -138,22 +138,22 @@ def VCFgen(gatk_jar,in_gvcf,out_vcf, ref_fa,log_output):
   gatk_ver="4"
   for i, c in enumerate(charstr):
     if c.isdigit():
-        gatk-ver=(charstr[i])
+        gatk_ver=(charstr[i])
         break
   cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
 	"GenotypeGVCFs",
 	"-R", ref_fa,
         "--variant", in_gvcf]
-  if(gatk_ver="3"):
-	cmd.insert(6,"-T")
-	cmd.append("--out")
-	cmd.append(out_vcf)
-	cmd.append("--useNewAFCalculator")
-  if(gatk_ver="4"):
-	cmd.append("-O")
-	cmd.append(out_vcf)
-	cmd.append("-new-qual")
-	cmd.append("TRUE")
+  if(gatk_ver=="3"):
+    cmd.insert(6,"-T")
+    cmd.append("--out")
+    cmd.append(out_vcf)
+    cmd.append("--useNewAFCalculator")
+  if(gatk_ver=="4"):
+    cmd.append("-O")
+    cmd.append(out_vcf)
+    cmd.append("-new-qual")
+    cmd.append("TRUE")
   start = time()
   run(cmd, stdout=log_output, stderr=log_output)
   end = time()

@@ -1,4 +1,4 @@
-#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
+#!/u/local/apps/python/3.7.2/bin/python3
 
 """Merges BQSR tables for each region"""
 """IMP NOTE: This BQSR report merge script only works with GATK 3.7 or above"""
@@ -33,10 +33,10 @@ def bqsr_gather(gatk_jar, in_paths, out_path, log_output=stdout):
         gatk_ver=(charstr[i])
         break
   cmd = [JAVA_DIR, "-Xmx4g", "-Djava.awt.headless=true", gatk_jar, gather_tool]
-  if gatk_ver="3":
+  if gatk_ver=="3":
     cmd.insert(3, "-cp")
     gather_tool = "org.broadinstitute.gatk.tools.GatherBqsrReports"
-  elif gatk_ver="4":
+  elif gatk_ver=="4":
     gather_tool = "GatherBQSRReports"
   for in_path in in_paths:
     cmd.append("I={}".format(in_path))

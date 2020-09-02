@@ -1,4 +1,4 @@
-#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
+#!/u/local/apps/python/3.7.2/bin/python3
 
 """Apply BQSR, call variants with HaplotypeCaller and generate vcf files using GenotypeGVCF"""
 
@@ -45,7 +45,7 @@ def print_reads(gatk_jar, in_path, out_path, ref_fa, interval_path,
     if c.isdigit():
         gatk_ver=(charstr[i])
         break
-  if(gatk_ver="4"): 
+  if(gatk_ver=="4"): 
 	 cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
                 "ApplyBQSR",
                 "-R", ref_fa,
@@ -54,7 +54,7 @@ def print_reads(gatk_jar, in_path, out_path, ref_fa, interval_path,
                 "--bqsr-recal-file", bqsr_table,
                 "-O", out_path]
   #PrintReads might not be the tool
-  if(gatk_ver="3"):
+  if(gatk_ver=="3"):
 	 cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
         "PrintReads",
         "-R", ref_fa,
@@ -94,7 +94,7 @@ def haplotype_caller(gatk_jar, in_path, out_path, ref_fa, interval_path,
     if c.isdigit():
         gatk_ver=(charstr[i])
         break
-  if gatk_ver="3":
+  if gatk_ver=="3":
   	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
          	"-T", "HaplotypeCaller",
          	"-R", ref_fa,
@@ -108,7 +108,7 @@ def haplotype_caller(gatk_jar, in_path, out_path, ref_fa, interval_path,
          	"--excludeAnnotation", "BaseQualityRankSumTest", "--excludeAnnotation", "MappingQualityRankSumTest", "--excludeAnnotation", "ReadPosRankSumTest",
          	"-stand_call_conf", "50",
          	"-pairHMM", "VECTOR_LOGLESS_CACHING"]
-  elif gatk_ver="4":
+  elif gatk_ver=="4":
 	cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
                 "HaplotypeCaller",
                 "-R", ref_fa,
@@ -149,12 +149,12 @@ def VCFgen(gatk_jar,in_gvcf,out_vcf, ref_fa,log_output):
         "GenotypeGVCFs",
         "-R", ref_fa,
         "--variant", in_gvcf]
-  if(gatk_ver="3"):
+  if(gatk_ver=="3"):
         cmd.insert(6,"-T")
         cmd.append("--out")
         cmd.append(out_vcf)
         cmd.append("--useNewAFCalculator")
-  if(gatk_ver="4"):
+  if(gatk_ver=="4"):
         cmd.append("-O")
         cmd.append(out_vcf)
         cmd.append("-new-qual")

@@ -1,4 +1,4 @@
-#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
+#!/u/local/apps/python/3.7.2/bin/python3
 
 """Generate Base Recalibration tables"""
 
@@ -61,25 +61,25 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
          "-L", interval_path,
          "-I", in_path,
          "-O", out_path]
-  if(gatk_ver="3"):
-	cmd.insert(6, "-T")
-	cmd.append("-nct")
-	cmd.append(n_cthreads) 
+  if(gatk_ver=="3"):
+    cmd.insert(6, "-T")
+    cmd.append("-nct")
+    cmd.append(n_cthreads) 
   for sites in known_sites:
-    if(gatk_ver="3"):
-    	cmd.append("-knownSites")
-    	cmd.append(sites)
-    elif(gatk-ver="4"): 
-	cmd.append("--known-sites")
-	cmd.append(sites)
+    if(gatk_ver=="3"):
+      cmd.append("-knownSites")
+      cmd.append(sites)
+    elif(gatk-ver=="4"): 
+      cmd.append("--known-sites")
+      cmd.append(sites)
   # If doing second pass to analyze covariation after recal
   if bqsr_table:
-    if(gatk_ver="3"):
-    	cmd.append("-BQSR")
-    	cmd.append(bqsr_table)
-    elif(gatk_ver="4"): 
-	cmd.append("-bqsr")
-	cmd.append(bqsr_table)
+    if(gatk_ver=="3"):
+      cmd.append("-BQSR")
+      cmd.append(bqsr_table)
+    elif(gatk_ver=="4"): 
+      cmd.append("-bqsr")
+      cmd.append(bqsr_table)
   start = time()
   run(cmd, stdout=log_output, stderr=log_output)
   end = time()

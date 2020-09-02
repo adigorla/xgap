@@ -1,4 +1,4 @@
-#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
+#!/u/local/apps/python/3.7.2/bin/python3
 
 """XGAP pipeline"""
 
@@ -608,7 +608,12 @@ class TaskVQSR(Task):
                   "ERROR",
                   "Exception"
                 }
-  success_terms = {}
+  success_terms = {
+			"Success", 
+			"Finished", 
+			"Done", 
+			"", 
+		  }
   def run(self, rerun_indicies=None):
     job_name="VQSR_{}".format(self.sample_id)
     log_path = "{}/BqsrHC/vqsr.log".format(self.log_dir)
