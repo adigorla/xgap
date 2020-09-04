@@ -100,7 +100,7 @@ class TaskFastq(Task):
           num_chunks = line.strip()
       #need to ADD ERROR HANDLING for physical hardware failure
       except NameError as e :
-          reason = "\tERROR:{}\n\tYou might not have allocated enough MEMORY and/or RUN TIME for the Fastq task OR there was hardware failure. Rerun, after checking config.yml paramerters.\n".format(e) 
+          reason = "\tERROR:{}\n\tYou might not have allocated enough MEMORY and/or RUN TIME for the Fastq task OR there was hardware failure. Rerun, after checking config.yml paramerters.\n".format(e)
           if self.config['mail-notify'][0].lower() == 'y':
               msg = ["Aborted", str(self.__class__.__name__), reason, "This entire task failed!"]
               stat = super().mail_notify(msg)
@@ -261,15 +261,15 @@ class TaskDedup(Task):
     job_ids = []
     if rerun_indices:
       for index in rerun_indices:
-          cmd = "{}/merge_dedup.py {} {} {} {} {} {} {} {} {}".format(task_dir, 
-                                                                      sambamba, 
-                                                                      self.sample_id, 
-                                                                      n_regions, 
-                                                                      self.out_dir, 
-                                                                      interval_dir, 
-                                                                      log_prefix, 
-                                                                      index, 
-                                                                      java_dir, 
+          cmd = "{}/merge_dedup.py {} {} {} {} {} {} {} {} {}".format(task_dir,
+                                                                      sambamba,
+                                                                      self.sample_id,
+                                                                      n_regions,
+                                                                      self.out_dir,
+                                                                      interval_dir,
+                                                                      log_prefix,
+                                                                      index,
+                                                                      java_dir,
                                                                       xgap_dir)
           if index == 0 :
               job_ids.append(task_scheduler.submit_job(job_name, cmd, mem_chri, runtime_chri, log_output))
@@ -356,7 +356,7 @@ class TaskDedup(Task):
         log_paths.append([log_path])
     return log_paths
 
-  
+
 class TaskRecal(Task):
   error_terms = [
                  "ERROR",
@@ -578,7 +578,7 @@ class TaskBqsrHc(Task):
       recal_dir = "{}/Recal".format(self.out_dir)
       if path.isdir(recal_dir):
           rmtree(recal_dir)
-  
+
   def gen_output_paths(self):
     output_paths = []
     n_regions = self.config["n-regions"]
@@ -604,15 +604,15 @@ class TaskBqsrHc(Task):
     return log_paths
 
 class TaskVQSR(Task):
-  error_terms = { 
+  error_terms = {
                   "ERROR",
                   "Exception"
                 }
   success_terms = {
-			"Success", 
-			"Finished", 
-			"Done", 
-			"", 
+			"Success",
+			"Finished",
+			"Done",
+			"",
 		  }
   def run(self, rerun_indicies=None):
     job_name="VQSR_{}".format(self.sample_id)
@@ -642,7 +642,7 @@ class TaskVQSR(Task):
     submit_checkpoint(self, job_ids)
   def clean_up(self):
     pass
- 
+
   def gen_output_paths(self):
     output_paths = [[]]
     output_paths[0].append("{}/vcf/{}.vcf.gz".format(self.out_dir, self.sample_id))
@@ -661,7 +661,7 @@ class TaskVQSR(Task):
 
   def gen_log_paths(self):
     log_paths = [["{}/BqsrHC/vqsr.log".format(self.log_dir)]]
-    return log_paths	
+    return log_paths
 
 
 class TaskMergeBams(Task):
@@ -700,14 +700,14 @@ class TaskMergeBams(Task):
 
 
   def clean_up(self):
-      
+
     #Successful so remove logs, commented out for testing
 
     #for step in ["Recal", "BqsrHc", "MergeBams", "Dedup", "Bwa", "Fastq"]:
     #  rmtree("{}/{}".format(self.log_dir, step))
-     
+
       # remove all regional, mapq0 and unmapped bams and index files
-    
+
     for index in range(int(self.config["n-regions"])):
         bam_path = "{}/bam/{}_{}.dedup.recal.bam".format(self.out_dir, self.sample_id, str(index).zfill(len(self.config["n-regions"])))
         bai_path = "{}/bam/{}_{}.dedup.recal.bai".format(self.out_dir, self.sample_id, str(index).zfill(len(self.config["n-regions"])))
@@ -719,8 +719,8 @@ class TaskMergeBams(Task):
         rmtree("{}/bam/qcfail".format(self.out_dir))
     if path.isdir("{}/bam/unmapped".format(self.out_dir)):
          rmtree("{}/bam/unmapped".format(self.out_dir))
-             
-    
+
+
 
   def gen_output_paths(self):
     output_paths = [[]]
@@ -757,17 +757,17 @@ class TaskFinish(Task):
       sysexit()
 
   def clean_up(self):
-      
+
       #remove all bams during testing
-      #CHANGE THIS 
+      #CHANGE THIS
       bam_dir = "{}/bam".format(self.out_dir)
       if path.isdir(bam_dir):
           rmtree(bam_dir)
-      
+
     #Successful so remove logs, commented out for testing
 
     #for step in ["Recal", "BqsrHc", "MergeBams", "Dedup", "Bwa", "Fastq"]:
-    #  rmtree("{}/{}".format(self.log_dir, step))  
+    #  rmtree("{}/{}".format(self.log_dir, step))
 
   def gen_output_paths(self):
     output_paths = [[]]
@@ -807,7 +807,7 @@ def main(sampleid, samplepath,configpath):
     config_path = sys.path[2]
     config = workflow.setup_utils.read_simple_yaml(config_path)
     config["xgap_path"] = sys.path[1]
-    global task_scheduler 
+    global task_scheduler
     task_scheduler = getattr(scheduler, config["scheduler"])
     workflow.checkpoint.main(sample_id, sample_path, config, config_path, pipeline)
 
