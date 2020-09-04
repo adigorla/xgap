@@ -19,7 +19,8 @@ from pysam import Samfile, index, AlignmentFile
 if 'SLURM_ARRAY_TASK_ID' in  environ:
     taskid = int(environ['SLURM_ARRAY_TASK_ID'])
 elif 'SGE_TASK_ID' in environ:
-    taskid = int(environ['SGE_TASK_ID'])
+    if environ['SGE_TASK_ID'] != 'undefined':
+        taskid = int(environ['SGE_TASK_ID'])
 elif 'PBS_ARRAYID' in environ:
     taskid = int(environ['PBS_ARRAYID'])
 
@@ -46,7 +47,7 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
     n_cthreads: Number of computing threads
     bqsr_table: Path to BQSR table if using existing covariates
   """
-  #Checks to see what version GATK user is using 
+  #Checks to see what version GATK user is using
   output=check_output([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
   charstr=output.decode('UTS_8')
   gatk_ver="4"
@@ -54,7 +55,7 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
     if c.isdigit():
         gatk_ver=(charstr[i])
         break
-  #GATK Version header is the first num  char in the output string for --version command 
+  #GATK Version header is the first num  char in the output string for --version command
   cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar,
          "BaseRecalibrator",
          "-R", ref_fa,
@@ -64,12 +65,12 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
   if(gatk_ver=="3"):
     cmd.insert(6, "-T")
     cmd.append("-nct")
-    cmd.append(n_cthreads) 
+    cmd.append(n_cthreads)
   for sites in known_sites:
     if(gatk_ver=="3"):
       cmd.append("-knownSites")
       cmd.append(sites)
-    elif(gatk-ver=="4"): 
+    elif(gatk-ver=="4"):
       cmd.append("--known-sites")
       cmd.append(sites)
   # If doing second pass to analyze covariation after recal
@@ -77,7 +78,7 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
     if(gatk_ver=="3"):
       cmd.append("-BQSR")
       cmd.append(bqsr_table)
-    elif(gatk_ver=="4"): 
+    elif(gatk_ver=="4"):
       cmd.append("-bqsr")
       cmd.append(bqsr_table)
   start = time()
@@ -129,7 +130,7 @@ def main(gatk_jar, sample_id, out_dir, ref_fa, known_sites_str, interval_dir,
   known_sites = [site.strip() for site in known_sites_str.split(',')]
   start = time()
   input_bam = "{}/Recal/{}_{}.dedup.bam".format(out_dir, sample_id, region_name)
-  
+
   '''
   #merge and index bam files
   cmd1 = [sambamba,"merge",
@@ -141,9 +142,9 @@ def main(gatk_jar, sample_id, out_dir, ref_fa, known_sites_str, interval_dir,
   run(cmd1, stdout=log_output, stderr=log_output)
   log_output.write("Merged chrI reads\n")
   '''
-  
 
-#merge chri                                                                                                                                                                       
+
+#merge chri
   input_bam = "{}/Recal/{}_{}.dedup.bam".format(out_dir, sample_id, region_name)
   log_output.write("Merging chrI reads\n")
   log_output.flush()
@@ -151,8 +152,8 @@ def main(gatk_jar, sample_id, out_dir, ref_fa, known_sites_str, interval_dir,
   merge_two_bams(region_bam, chri_bam, input_bam)
   log_output.write("Merged chrI reads\n")
   log_output.flush()
-  fsync(log_output.fileno())  
-#index BAM files                                                                                                                                                                  
+  fsync(log_output.fileno())
+#index BAM files
   try:
     AlignmentFile(input_bam, "rb").check_index()
   except:
