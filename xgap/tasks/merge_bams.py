@@ -130,7 +130,7 @@ def main(sample_id, out_dir, n_regions, regions_dir, log_path):
     log_output.flush()
     fsync(log_output.fileno())
     remove(bam_list_path)
-  complete_end = time()  
+  complete_end = time()
   log_output.write("Merged all BAMs in "
                    "{} seconds\n".format(round(complete_end-complete_start)))
   log_output.close()
