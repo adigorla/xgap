@@ -36,7 +36,7 @@ def submit_job(job_name, job, mem, runtime, log_output, num_tasks=1, highp=False
   print(output_str)
   # Assumes last line of stdout is 
   # "Your [job] [job_id] ([job_name]) has been submitted"
-  job_id = output_str.strip().split()[-5].split(b'.')[0].decode("utf-8")
+  job_id = output_str.strip().split()[-5].split('.')[0]
   if not job_id.isnumeric():
     raise Exception("Job ID not found")
   return job_id
