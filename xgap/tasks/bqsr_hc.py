@@ -12,7 +12,8 @@ from time import time
 if 'SLURM_ARRAY_TASK_ID' in  environ:
     taskid = int(environ['SLURM_ARRAY_TASK_ID'])
 elif 'SGE_TASK_ID' in environ:
-    taskid = int(environ['SGE_TASK_ID'])
+    if environ['SGE_TASK_ID'] != 'undefined':
+        taskid = int(environ['SGE_TASK_ID'])
 elif 'PBS_ARRAYID' in environ:
     taskid = int(environ['PBS_ARRAYID'])
 
@@ -48,7 +49,7 @@ def print_reads(gatk_jar, in_path, out_path, ref_fa, interval_path,
   #PrintReads might not be the tool
   if(gatk_ver=="4"):
     cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-		"ApplyBQSR", 
+		"ApplyBQSR",
 		"-R", ref_fa,
 		"-I", in_path,
 		"-L", interval_path,
