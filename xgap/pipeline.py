@@ -61,7 +61,7 @@ class TaskFastq(Task):
     mem = self.config["avail-memory"][0]
     runtime = self.config["avail-time"][0]
     num_tasks = 1
-    log_output = "/dev/null"
+    log_output = "/u/scratch/l/lukezhan/log_temp"
     job_id = [task_scheduler.submit_job(job_name, cmd, mem, runtime, log_output,
                                         num_tasks)]
     submit_checkpoint(self, job_id)
@@ -151,7 +151,8 @@ class TaskBwa(Task):
       mkdir(final_bam_dir)
     mem = self.config["avail-memory"][1]
     runtime = self.config["avail-time"][1]
-    log_output = "/dev/null"
+    #log_output = "/dev/null"
+    log_output = "/u/scratch/l/lukezhan/log_temp/"
     job_ids = []
     if rerun_indices:
       for index in rerun_indices:

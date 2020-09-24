@@ -134,7 +134,7 @@ def get_sequences(reference_dict_path):
       entries = line.strip().split()
       if entries[0] == "@SQ":
         for entry in entries[1::]:
-          secondary_entries = entry.split(':')
+          secondary_entries = entry.split(':', maxsplit=1)
           if secondary_entries[0].strip() == "SN":
             sequence_name = secondary_entries[1].strip()
           if secondary_entries[0].strip() == "LN":

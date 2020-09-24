@@ -38,18 +38,18 @@ n-threads: "1"
 # Max memory available for each  task
 #Memeory allocation coresponds to the following tasks:
 #             [fastq_prep, bwa, dedup_chri, dedup, base_recal, merge_recal, bqsr_hc_gvcf, merge_bams, check]
-avail-memory: ["1G", "8G", "7500M", "5632M", "12G", "12G", "12G", "1G", "512M"]
+avail-memory: ["20G", "20G", "10G", "10G", "20G", "20G", "20G", "10G", "5G"]
 
 # Max time allotted for a task (default 12 hours)
 #Time allocation correspond to the following tasks:  
 #           [fastq_prep, bwa,        dedup_chri, dedup,      base_recal, merge_recal, bqsr_hc_gvcf, merge_bams, check] 
-avail-time: ["18:00:00", "11:00:00", "06:00:00", "01:00:00", "09:45:00", "00:30:00", "12:00:00", "18:00:00", "00:30:00"]
+avail-time: ["20:00:00", "11:00:00", "06:00:00", "01:00:00", "09:45:00", "00:30:00", "12:00:00", "18:00:00", "00:30:00"]
 
 #Sequencing Platform
 seq-plat: "ILLUMINA" 
 
 # Unique identifier of output disk in output of "df" util, [NEED TO FIX THIS]
-output-disk-identifier: "sda"
+output-disk-identifier: "tmpfs"
 
 # Analysis will halt if disk usage greater than or equal to this value
 free-disk-threshold: "100"
@@ -87,10 +87,10 @@ bin-sambamba: "/u/home/l/lukezhan/sambamba_v0.6.6"
 ref-type: "grch38"
 
 # Full path to reference fasta file
-ref-fasta: "/u/home/l/lukezhan/refgenome/GRCh38_full_analysis_set_plus_decoy_hla.fa"
+ref-fasta: "/u/scratch/l/lukezhan/GRCh38_full_analysis_set_plus_decoy_hla.fasta"
 
 # Full path to reference dict file
-ref-dict: "/u/home/l/lukezhan/refgenome/GRCh38_full_analysis_set_plus_decoy_hla.dict"
+ref-dict: "/u/scratch/l/lukezhan/GRCh38_full_analysis_set_plus_decoy_hla.dict"
 
 # Full path to reference dbsnp vcf file
 dbsnp-vcf:  "/u/scratch/l/lukezhan/xgap/dbsnp_138.hg38.vcf"

@@ -1,1 +1,0 @@
-A-WCAP-WC001136-BL-COL-41759BL1_vcpa1 /u/scratch/l/lukezhan/sample_bams/A-WCAP-WC001136-BL-COL-41759BL1_vcpa1.0_GRU-IRB-PUB.bam

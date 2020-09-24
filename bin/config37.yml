@@ -1,0 +1,104 @@
+---
+
+# This config file is specific to running the standard xGAP pipeline for variant calling
+
+###########################
+## Output Specifications ##
+###########################
+
+# Directory to store all output files
+output-dir: "/u/scratch/l/lukezhan/xgap"
+
+# Directory to store intermediate files
+working-dir: "/u/scratch/l/lukezhan/xgap"
+
+# Directory to store logs
+log-dir: "/u/scratch/l/lukezhan/xgap"
+
+
+#############################
+## Resource Specifications ##
+#############################
+
+# Scheduler type: sge, slurm or aws_slurm [CASE SENSITIVE]
+scheduler: "sge"
+
+# Number of times a task can start before being aborted
+start-limit: "2"
+
+# Max number of failed jobs per pask that will be rerun; If more, analysis will be aborted
+rerun-limit: "500"
+
+# Number of regions to parallelize a sample
+n-regions: "400"
+
+# Max threads available for a task
+n-threads: "1"
+
+# Max memory available for each  task
+#Memeory allocation coresponds to the following tasks:
+#             [fastq_prep, bwa, dedup_chri, dedup, base_recal, merge_recal, bqsr_hc_gvcf, merge_bams, check]
+avail-memory: ["20G", "20G", "10G", "10G", "20G", "20G", "20G", "10G", "5G"]
+
+# Max time allotted for a task (default 12 hours)
+#Time allocation correspond to the following tasks:  
+#           [fastq_prep, bwa,        dedup_chri, dedup,      base_recal, merge_recal, bqsr_hc_gvcf, merge_bams, check] 
+avail-time: ["20:00:00", "11:00:00", "06:00:00", "01:00:00", "09:45:00", "00:30:00", "12:00:00", "18:00:00", "00:30:00"]
+
+#Sequencing Platform
+seq-plat: "ILLUMINA" 
+
+# Unique identifier of output disk in output of "df" util, [NEED TO FIX THIS]
+output-disk-identifier: "tmpfs"
+
+# Analysis will halt if disk usage greater than or equal to this value
+free-disk-threshold: "100"
+
+# Number of samples actively analyzed on shared queue
+shared-active-samples: "6"
+
+#Mail notify settings
+#            [y/n,      sender address    ,      recipient address  ]
+mail-notify: ["n", "my.mailserv@gmail.com", "some.one@yahoo.com"]
+
+##########################
+## Program Dependencies ##
+##########################
+
+# Path to java 1.8.X executable 
+java-dir: "/u/local/apps/java/current/bin/java"
+
+# Path to BWA executable
+bin-bwa: "/u/local/apps/bwa/current/bwa"
+
+# Path to GATK 3.7/3.8 jar
+gatk-jar: "/u/home/l/lukezhan/gatk-4.1.8.1/gatk-package-4.1.8.1-local.jar"
+# Denote GATK version as GATK3 or GATK4
+bcftools-path: "/u/local/apps/bcftools/1.10.2/bin/bcftools"
+# Path to sambamba execuatble
+# only use v0.6.6, new versions tend to unxexpectedly segfault on Xeon cores!
+bin-sambamba: "/u/home/l/lukezhan/sambamba_v0.6.6"
+
+############################
+## Reference Dependencies ##
+############################
+
+# Reference type
+ref-type: "grch37"
+
+# Full path to reference fasta file
+ref-fasta: "/u/home/l/lukezhan/data_bucket/luke_data/ref_genome/grch37/human_g1k_v37.fasta"
+
+# Full path to reference dict file
+ref-dict: "/u/home/l/lukezhan/data_bucket/luke_data/ref_genome/grch37/human_g1k_v37.dict"
+
+# Full path to reference dbsnp vcf file
+dbsnp-vcf:  "/u/home/l/lukezhan/data_bucket/luke_data/ref_genome/grch37/dbsnp_138.b37.vcf"
+
+# Full path to reference 1000g indels vcf file
+1000g-indel-vcf: "/u/home/l/lukezhan/data_bucket/luke_data/ref_genome/grch37/1000G_phase1.indels.b37.vcf.idx"
+
+# Full path to reference Mills and Devine indel vcf file
+mills-devine-indel-vcf: "/u/home/l/lukezhan/data_bucket/luke_data/ref_genome/grch37/Mills_and_1000G_gold_standard.indels.b37.vcf"
+
+...
