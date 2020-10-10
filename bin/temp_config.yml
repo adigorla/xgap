@@ -7,13 +7,13 @@
 ###########################
 
 # Directory to store all output files
-output-dir: "/u/scratch/l/lukezhan/xgap"
+output-dir: "/u/project/eeskin2/lukezhan"
 
 # Directory to store intermediate files
-working-dir: "/u/scratch/l/lukezhan/xgap"
+working-dir: "/u/project/eeskin2/lukezhan"
 
 # Directory to store logs
-log-dir: "/u/scratch/l/lukezhan/xgap"
+log-dir: "/u/project/eeskin2/lukezhan"
 
 
 #############################
@@ -30,20 +30,20 @@ start-limit: "2"
 rerun-limit: "500"
 
 # Number of regions to parallelize a sample
-n-regions: "400"
+n-regions: "200"
 
 # Max threads available for a task
 n-threads: "1"
 
 # Max memory available for each  task
 #Memeory allocation coresponds to the following tasks:
-#             [fastq_prep, bwa, dedup_chri, dedup, base_recal, merge_recal, bqsr_hc_gvcf, merge_bams, check]
-avail-memory: ["20G", "20G", "10G", "10G", "20G", "20G", "20G", "10G", "5G"]
+#             [fastq_prep, bwa, dedup_chri, dedup, base_recal, merge_recal, bqsr_hc_gvcf, vqsr, merge_bams, check]
+avail-memory: ["20G", "20G", "10G", "10G", "20G", "20G", "20G", "16G", "8G", "1G"]
 
 # Max time allotted for a task (default 12 hours)
 #Time allocation correspond to the following tasks:  
-#           [fastq_prep, bwa,        dedup_chri, dedup,      base_recal, merge_recal, bqsr_hc_gvcf, merge_bams, check] 
-avail-time: ["20:00:00", "11:00:00", "06:00:00", "01:00:00", "09:45:00", "00:30:00", "12:00:00", "18:00:00", "00:30:00"]
+#           [fastq_prep, bwa,        dedup_chri, dedup,      base_recal, merge_recal, bqsr_hc_gvcf, vqsr, merge_bams, check] 
+avail-time: ["20:00:00", "11:00:00", "10:00:00", "10:00:00", "10:00:00", "00:30:00", "12:00:00", "18:00:00", "18:00:00", "00:30:00"]
 
 #Sequencing Platform
 seq-plat: "ILLUMINA" 
@@ -61,44 +61,54 @@ shared-active-samples: "6"
 #            [y/n,      sender address    ,      recipient address  ]
 mail-notify: ["n", "my.mailserv@gmail.com", "some.one@yahoo.com"]
 
+#Run GATK4 VQSR step
+#        [y/n]
+vqsr-exe: "n"
+
+
 ##########################
 ## Program Dependencies ##
 ##########################
 
 # Path to java 1.8.X executable 
-java-dir: "/u/local/apps/java/current/bin/java"
+java-dir: "/u/local/apps/java/jdk1.8.0_111/bin/java"
 
 # Path to BWA executable
 bin-bwa: "/u/local/apps/bwa/current/bwa"
 
-# Path to GATK 3.7/3.8 jar
-gatk-jar: "/u/home/l/lukezhan/gatk-4.1.8.1/gatk-package-4.1.8.1-local.jar"
-# Denote GATK version as GATK3 or GATK4
+# Path to GATK 3.7/3.8/4.0+ jar
+#gatk-jar: "/u/home/l/lukezhan/gatk-4.1.8.1/gatk-package-4.1.8.1-local.jar"
+gatk-jar: "/u/home/l/lukezhan/data_bucket/winston_depn/lib/gatk/GenomeAnalysisTK-3.8-1-0/GenomeAnalysisTK.jar"
+
 bcftools-path: "/u/local/apps/bcftools/1.10.2/bin/bcftools"
 # Path to sambamba execuatble
 # only use v0.6.6, new versions tend to unxexpectedly segfault on Xeon cores!
-bin-sambamba: "/u/home/l/lukezhan/sambamba_v0.6.6"
+bin-sambamba: "/u/home/l/lukezhan/data_bucket/winston_depn/lib/sambamba/sambamba_v0.6.6"
 
 ############################
 ## Reference Dependencies ##
 ############################
 
 # Reference type
-ref-type: "grch38"
+ref-type: "grch37"
 
 # Full path to reference fasta file
-ref-fasta: "/u/scratch/l/lukezhan/GRCh38_full_analysis_set_plus_decoy_hla.fasta"
+ref-fasta: "/u/home/l/lukezhan/data_bucket/winston_depn/ref_genome/grch37/human_g1k_v37.fasta"
 
 # Full path to reference dict file
-ref-dict: "/u/scratch/l/lukezhan/GRCh38_full_analysis_set_plus_decoy_hla.dict"
+ref-dict: "/u/home/l/lukezhan/data_bucket/winston_depn/ref_genome/grch37/human_g1k_v37.dict"
 
 # Full path to reference dbsnp vcf file
-dbsnp-vcf:  "/u/scratch/l/lukezhan/xgap/dbsnp_138.hg38.vcf"
+dbsnp-vcf:  "/u/home/l/lukezhan/data_bucket/winston_depn/ref_genome/grch37/dbsnp_138.b37.vcf"
 
 # Full path to reference 1000g indels vcf file
-1000g-indel-vcf: "/u/scratch/l/lukezhan/xgap/1000G_phase1.snps.high_confidence.hg38.vcf"
+1000g-indel-vcf: "/u/home/l/lukezhan/data_bucket/winston_depn/ref_genome/grch37/1000G_phase1.indels.b37.vcf"
 
 # Full path to reference Mills and Devine indel vcf file
-mills-devine-indel-vcf: "/u/scratch/l/lukezhan/xgap/Mills_and_1000G_gold_standard.indels.hg38.vcf"
+mills-devine-indel-vcf: "/u/home/l/lukezhan/data_bucket/winston_depn/ref_genome/grch37/Mills_and_1000G_gold_standard.indels.b37.vcf"
+
+hapmap: "/u/home/l/lukezhan/data_bucket/winston_depn/ref_genome/grch37/hapmap_3.3.b37.vcf"
+
+omni: "/u/home/l/lukezhan/data_bucket/winston_depn/ref_genome/grch37/1000G_omni2.5.b37.vcf"
 
 ...

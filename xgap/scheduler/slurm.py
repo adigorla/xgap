@@ -22,8 +22,9 @@ def submit_job(job_name, job, mem, runtime, log_output, num_tasks=1, highp=False
   if num_tasks > 1:
     cmd.append("--array=1-{}:1".format(num_tasks))
   if hold_id:
+    hold_ids_str = ":".join(ids.strip() for ids in hold_id)
     cmd.append("-d")
-    cmd.append("afterany:{}".format(hold_id))
+    cmd.append("afterany:{}".format(hold_ids_str))
   cmd = cmd + job.split()
   try:
     output = check_output(cmd)

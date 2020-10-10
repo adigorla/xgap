@@ -11,6 +11,7 @@ from sys import path as syspath
 from sys import exit as sysexit
 from time import time, sleep
 from pysam import AlignmentFile
+from tempfile import NamedTemporaryFile
 
 #using RETRY bool to decide what INDEX_STR should be set to
 try:
@@ -46,6 +47,7 @@ def split_bam(sambamaba, output_bam, out_prefix, interval_dir, log_output):
   ifiles = glob("{}/region_*.m3bp.intervals".format(interval_dir))
   exceperr = "Exception@BioD/bio/bam/reader"
   active = False
+  tempf = NamedTemporaryFile(mode='w+t')
 
   #Using sambamba slice to split chri deduped bam
   for dfile in ifiles:
@@ -57,7 +59,17 @@ def split_bam(sambamaba, output_bam, out_prefix, interval_dir, log_output):
     rname = dfile.split("/")[-1].split(".")[0]
     if len(interval) > 1:
       cmdarg = [sambamba, "view", "--format=bam", "--output-filename={}_{}.bam".format(out_prefix, rname), output_bam]
-      cmdarg.extend(interval)
+      if len(interval) > 200:
+        for itm in interval:
+          elms = itm.strip().split(':')
+          start, stop = elms.pop(-1).split('-')
+          start = str(int(start)-1)
+          tempf.write("{}\t{}\t{}\n".format(':'.join(elms), start, stop))
+        tempf.flush()
+        cmdarg.insert(-1, "-L")
+        cmdarg.insert(-1, tempf.name)
+      else:
+        cmdarg.extend(interval)
       proc = Popen(cmdarg, stdout=PIPE, stderr=PIPE)
     else:
       proc = Popen([sambamba, "slice", "--output-filename={}_{}.bam".format(out_prefix, rname), output_bam, interval[0]], stdout=PIPE, stderr=PIPE)
@@ -77,6 +89,7 @@ def split_bam(sambamaba, output_bam, out_prefix, interval_dir, log_output):
           infile.close()
         proc.stderr.close()
         active = False
+  tempf.close()
 
   return(0)
 

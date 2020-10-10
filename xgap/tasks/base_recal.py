@@ -49,7 +49,7 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
   """
   #Checks to see what version GATK user is using
   output=check_output([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
-  charstr=output.decode('UTS_8')
+  charstr=output.decode('UTF_8')
   gatk_ver="4"
   for i, c in enumerate(charstr):
     if c.isdigit():
@@ -57,20 +57,24 @@ def base_recalibrator(gatk_jar, in_path, out_path, ref_fa, known_sites,
         break
   #GATK Version header is the first num  char in the output string for --version command
   cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar,
-         "BaseRecalibrator",
-         "-R", ref_fa,
-         "-L", interval_path,
-         "-I", in_path,
-         "-O", out_path]
+	"BaseRecalibrator",
+        "-R", ref_fa,
+        "-L", interval_path,
+        "-I", in_path]
+  if(gatk_ver=="4"):
+    cmd.append("-O")
+    cmd.append(out_path)
   if(gatk_ver=="3"):
     cmd.insert(6, "-T")
+    cmd.append("-o") 
+    cmd.append(out_path)
     cmd.append("-nct")
     cmd.append(n_cthreads)
   for sites in known_sites:
     if(gatk_ver=="3"):
       cmd.append("-knownSites")
       cmd.append(sites)
-    elif(gatk-ver=="4"):
+    elif(gatk_ver=="4"):
       cmd.append("--known-sites")
       cmd.append(sites)
   # If doing second pass to analyze covariation after recal
@@ -153,15 +157,13 @@ def main(gatk_jar, sample_id, out_dir, ref_fa, known_sites_str, interval_dir,
   log_output.write("Merged chrI reads\n")
   log_output.flush()
   fsync(log_output.fileno())
-#index BAM files
-  try:
-    AlignmentFile(input_bam, "rb").check_index()
-  except:
-    log_output.write("Generating index file")
-    log_output.flush()
-    fsync(log_output.fileno())
-    index(input_bam,"{}.bai".format(input_bam))
-
+  #index BAM files 
+  log_output.write("Generating index file....\n")
+  log_output.flush()
+  fsync(log_output.fileno())
+  index(input_bam,"{}.bai".format(input_bam))
+  log_output.write("Merge and indexing complete\n")
+  
   # Generate BQSR table
   log_output.write("Generating BQSR table\n")
   log_output.flush()

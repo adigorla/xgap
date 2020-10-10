@@ -49,19 +49,19 @@ def print_reads(gatk_jar, in_path, out_path, ref_fa, interval_path,
   #PrintReads might not be the tool
   if(gatk_ver=="4"):
     cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-		"ApplyBQSR",
-		"-R", ref_fa,
-		"-I", in_path,
-		"-L", interval_path,
-		"--bqsr-recal-file", bqsr_table,
-		"-O", out_path]
+      "ApplyBQSR",
+      "-R", ref_fa,
+      "-I", in_path,
+      "-L", interval_path,
+      "--bqsr-recal-file", bqsr_table,
+      "-O", out_path]
   if(gatk_ver=="3"):
     cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-        "PrintReads",
-        "-R", ref_fa,
-        "-I", in_path,
-        "-L", interval_path,
-        "-O", out_path]
+      "PrintReads",
+      "-R", ref_fa,
+      "-I", in_path,
+      "-L", interval_path,
+      "-o", out_path]
 
     cmd.insert(6,"-T")
     cmd.append("-nct")
@@ -89,7 +89,7 @@ def haplotype_caller(gatk_jar, in_path, out_path, ref_fa, interval_path,
     dbsnp_path: Path to dbsnp VCF file
     log_output: File handle for log file
   """
-  output=check_out([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
+  output=check_output([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
   charstr=output.decode('utf-8')
   gatk_ver="4"
   for i, c in enumerate(charstr):
@@ -97,15 +97,22 @@ def haplotype_caller(gatk_jar, in_path, out_path, ref_fa, interval_path,
         gatk_ver=(charstr[i])
         break
   cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true", "-jar", gatk_jar,
-                "HaplotypeCaller",
-                "-R", ref_fa,
-                "-I", in_path,
-                "-O", out_path,
-                "-L", interval_path,
-                "--dbsnp", dbsnp_path,
-                "--emit-ref-confidence", "GVCF"]
+  	"HaplotypeCaller",
+        "-R", ref_fa,
+        "-I", in_path,
+        "-L", interval_path,
+        "--dbsnp", dbsnp_path]
+  if(gatk_ver=="4"):
+    cmd.append("-O")
+    cmd.append(out_path)
+    cmd.append("--emit-ref-confidence")
+    cmd.append("GVCF")
   if(gatk_ver=="3"):
-    cmd.insert(6,"-T")
+    cmd.insert(6, "-T")
+    cmd.append("-o")
+    cmd.append(out_path)
+    cmd.append("--emitRefConfidence")
+    cmd.append("GVCF")
     cmd.append("--variant_index_type")
     cmd.append("LINEAR")
     cmd.append("--variant_index_parameter")
@@ -114,7 +121,7 @@ def haplotype_caller(gatk_jar, in_path, out_path, ref_fa, interval_path,
     cmd.append("NONE")
     cmd.append("-baq")
     cmd.append("OFF")
-  cmd.append("mbq")
+  cmd.append("-mbq")
   cmd.append("17")
   start = time()
   run(cmd, stdout=log_output, stderr=log_output)
@@ -134,7 +141,7 @@ def VCFgen(gatk_jar,in_gvcf,out_vcf, ref_fa,log_output):
     ref_fa: Path to reference fasta file
     log_output: File handle for log file
   """
-  output=check_out([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
+  output=check_output([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
   charstr=output.decode('utf-8')
   gatk_ver="4"
   for i, c in enumerate(charstr):

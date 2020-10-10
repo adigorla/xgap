@@ -3,7 +3,7 @@
 from subprocess import check_output, CalledProcessError
 
 def submit_job(job_name, job, mem, runtime, log_output, num_tasks=1, highp=False,
-               queue=None, hold_id=None):
+               queue=None, hold_ids=None):
   """Submits job with given parameters to SGE queue"""
   cmd = ["qsub",
          "-N", job_name,
@@ -21,9 +21,10 @@ def submit_job(job_name, job, mem, runtime, log_output, num_tasks=1, highp=False
   if num_tasks > 1:
     cmd.append("-t")
     cmd.append("1-{}:1".format(num_tasks))
-  if hold_id:
+  if hold_ids:
+    hold_ids_str = ",".join(ids.strip() for ids in hold_ids)
     cmd.append("-hold_jid")
-    cmd.append(hold_id)
+    cmd.append(hold_ids_str)
   cmd = cmd + job.split()
   try:
     output = check_output(cmd)
