@@ -39,7 +39,15 @@ git clone --single-branch --branch master git@github.com:Adigorla/xgap.git
 
 ### Running xGAP consistently across multiple platforms
 
-**Fill this in ..... **
+**1.** To produce consistent results across multiple platforms, we recommend that you create a conda or pip virtual environment and install the required modules for xGAP. 
+
+**2.** Users should save executables binaries or jar files in a resources folder in xGAP (GATK, BWA, etc).
+
+**3.** Users should assign the path for their local Python3 interpreter for xGAP to the newly created, xGAP specific virtual environment using the interpAssign.sh tool. 
+
+**4.** After the previous steps have been taken, users need to copy xGAP with ‘resources’ folder to the new platform and spin-up a new virtual environment using the resource/requirement specifications used in the previous one.
+
+Once users run the interpAssign.sh script with the path to the python executable in the new virtual environment and make minor adjustment to the paths in the config file, users are ready to run xGAP. We are currently focusing on containerizing xGAP in future builds to better support reproducibility.
 
 ## Usage
 
