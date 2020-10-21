@@ -1,4 +1,4 @@
-#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
+#!/u/local/apps/python/3.7.2/bin/python3
 
 """Aligns reads and sorts into proper regions and coordinate order"""
 
@@ -14,7 +14,8 @@ from pysam import Samfile, AlignedRead, qualitystring_to_array
 if 'SLURM_ARRAY_TASK_ID' in  environ:
     taskid = int(environ['SLURM_ARRAY_TASK_ID'])
 elif 'SGE_TASK_ID' in environ:
-    taskid = int(environ['SGE_TASK_ID'])
+    if environ['SGE_TASK_ID'] != 'undefined':
+        taskid = int(environ['SGE_TASK_ID'])
 elif 'PBS_ARRAYID' in environ:
     taskid = int(environ['PBS_ARRAYID'])
 
@@ -43,6 +44,7 @@ _Region = namedtuple("Region", ["name", "lower_bound", "upper_bound"])
 
 #CIGAR values
 _CIGAR_OPERATIONS = {}
+_OK_TAG_SET = {'i', 'f', 'A','Z'}
 for _val, _char in enumerate("MIDNSHP=XB"):
   _CIGAR_OPERATIONS[_char] = _val
 
@@ -89,7 +91,9 @@ def _load_regions(interval_paths):
     region_name = path.splitext(path.splitext(path.basename(region_path))[0])[0] #region_XXXX
     with open(region_path, 'r') as region_file:
       for line in region_file:
-        chromosome, bounds = line.strip().split(":")
+        chrInfo = line.strip().split(":")
+        bounds = chrInfo.pop(-1)
+        chromosome = ':'.join(chrInfo)
         lower_bound, upper_bound = [int(bound) for bound in bounds.split("-")]
         region = _Region(region_name, lower_bound, upper_bound)
         if chromosome in regions:
@@ -256,6 +260,7 @@ def _string_to_aligned_segment(line, seq_dict, log_output):
     aligned_segment: pysam AlignedRead class with values from 'line'
   """
   line = line.strip().split()
+  #print(line)
   aligned_segment = AlignedRead()
   aligned_segment.query_name = line[0]
   aligned_segment.flag = int(line[1])
@@ -281,22 +286,22 @@ def _string_to_aligned_segment(line, seq_dict, log_output):
   aligned_segment.next_reference_start = int(line[7]) - 1
   aligned_segment.template_length = int(line[8])
   aligned_segment.query_sequence = line[9]
-  aligned_segment.query_qualities = qualitystring_to_array(line[10])
+  aligned_segment.query_qualities = qualitystring_to_array(line[10]) 
   for field in line[11::]:
-    tag, tag_type, val = field.split(":")
-    if tag_type == "i":
+    tag, tag_type, val = field.split(":", maxsplit=2)
+    if tag_type	== "i":
       val = int(val)
     elif tag_type == "f":
-      val = float(val)
-    elif tag_type == "H":
+      val = float(val) 
+    elif tag_type == "H": 
       val = bytearray.fromhex(val)
     elif tag_type == "B":
       val = [int(i) for i in val.split(",")]
-    elif not (tag_type == "A" or tag_type == "Z"):
-      err_msg = "Optional Ttag type '{}' not recognized".format(tag_type)
-      log_output.write("ERROR: {}\n".format(err_msg))
-      raise Exception(err_msg)
-    aligned_segment.set_tag(tag, val, value_type=tag_type)
+    elif not (tag_type == "A" or tag_type == "Z"): 
+     err_msg = "Optional Ttag type '{}' not recognised".format(tag_type)
+     log_output.write("ERROR: {}\n".format(err_msg))
+     raise Exception(err_msg)
+    aligned_segment.set_tag(tag, val, value_type=tag_type) 
   return aligned_segment
 
 def _read_sorter(rlist, unmapped_file, qcfail_file, regions, regional_reads, seq_dict, log_output):

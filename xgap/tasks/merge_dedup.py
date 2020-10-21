@@ -1,4 +1,4 @@
-#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
+#!/u/local/apps/python/3.7.2/bin/python3
 
 """Methods for merging sorted BAM files and dedupping"""
 
@@ -11,6 +11,7 @@ from sys import path as syspath
 from sys import exit as sysexit
 from time import time, sleep
 from pysam import AlignmentFile
+from tempfile import NamedTemporaryFile
 
 #using RETRY bool to decide what INDEX_STR should be set to
 try:
@@ -29,7 +30,8 @@ except IndexError:
 if 'SLURM_ARRAY_TASK_ID' in  environ:
     taskid = int(environ['SLURM_ARRAY_TASK_ID'])
 elif 'SGE_TASK_ID' in environ:
-    taskid = int(environ['SGE_TASK_ID'])
+    if environ['SGE_TASK_ID'] != 'undefined':
+        taskid = int(environ['SGE_TASK_ID'])
 elif 'PBS_ARRAYID' in environ:
     taskid = int(environ['PBS_ARRAYID'])
 
@@ -45,7 +47,8 @@ def split_bam(sambamaba, output_bam, out_prefix, interval_dir, log_output):
   ifiles = glob("{}/region_*.m3bp.intervals".format(interval_dir))
   exceperr = "Exception@BioD/bio/bam/reader"
   active = False
-  
+  tempf = NamedTemporaryFile(mode='w+t')
+
   #Using sambamba slice to split chri deduped bam
   for dfile in ifiles:
     interval = []
@@ -56,7 +59,17 @@ def split_bam(sambamaba, output_bam, out_prefix, interval_dir, log_output):
     rname = dfile.split("/")[-1].split(".")[0]
     if len(interval) > 1:
       cmdarg = [sambamba, "view", "--format=bam", "--output-filename={}_{}.bam".format(out_prefix, rname), output_bam]
-      cmdarg.extend(interval)
+      if len(interval) > 200:
+        for itm in interval:
+          elms = itm.strip().split(':')
+          start, stop = elms.pop(-1).split('-')
+          start = str(int(start)-1)
+          tempf.write("{}\t{}\t{}\n".format(':'.join(elms), start, stop))
+        tempf.flush()
+        cmdarg.insert(-1, "-L")
+        cmdarg.insert(-1, tempf.name)
+      else:
+        cmdarg.extend(interval)
       proc = Popen(cmdarg, stdout=PIPE, stderr=PIPE)
     else:
       proc = Popen([sambamba, "slice", "--output-filename={}_{}.bam".format(out_prefix, rname), output_bam, interval[0]], stdout=PIPE, stderr=PIPE)
@@ -76,9 +89,10 @@ def split_bam(sambamaba, output_bam, out_prefix, interval_dir, log_output):
           infile.close()
         proc.stderr.close()
         active = False
-  
+  tempf.close()
+
   return(0)
-  
+
 def mark_duplicates(sambamba, in_path, out_path, log_output=stdout,
                     remove_dup=False, threads=1, compress=3, hashsize=4194304, oflist=2000000, iobuffer=512):
   """Sambamba markdup
@@ -90,18 +104,18 @@ def mark_duplicates(sambamba, in_path, out_path, log_output=stdout,
     remove_dup: True to remove duplicates, False otherwise.
     threads: number of threads to use
     compress: specify compression level of the resulting file (from 0 to 9)")
-    hashsize: size of hash table for finding read pairs; 
-              will be rounded down to the nearest power of two; 
+    hashsize: size of hash table for finding read pairs;
+              will be rounded down to the nearest power of two;
               should be > (average coverage) * (insert size) for good performance
-    oflist: size of overflow list where reads, thrown away from the hash table, 
-            get a second chance to meet their pairs. Increasing this reduces the 
+    oflist: size of overflow list where reads, thrown away from the hash table,
+            get a second chance to meet their pairs. Increasing this reduces the
             number of temp files created.
-    iobuffer: 2 buffer of this size (in MB) used for reading and writing BAM during 
+    iobuffer: 2 buffer of this size (in MB) used for reading and writing BAM during
               2nd pass
   """
 
   tmpdir = "{}/../../xgap_intermediate_files/{}/".format(out_dir,sample_id)
-  cmd = [sambamba, "markdup", "--nthreads={}".format(threads), 
+  cmd = [sambamba, "markdup", "--nthreads={}".format(threads),
          "--compression-level={}".format(compress), "--tmpdir={}".format(tmpdir), "--overflow-list-size={}".format(oflist), "--io-buffer-size={}".format(iobuffer)]
   if remove_dup:
     cmd.append("--remove-duplicates")
@@ -151,7 +165,7 @@ def main(picard_jar, sample_id, n_regions, out_dir, interval_dir, log_prefix):
   cmd = [sambamba,"merge",
          "--nthreads=1",
          "--compression-level=3"]
-  #parallel merge                                                   
+  #parallel merge
   processes = [Popen(cmd+[temp_bams[n]]+files , stdout=PIPE, stderr=PIPE) for n, files in enumerate(input_bams)]
   delay = 25
   while processes:
@@ -183,7 +197,7 @@ def main(picard_jar, sample_id, n_regions, out_dir, interval_dir, log_prefix):
   log_output.write("Finished merging in {} seconds\n".format(end-start))
   log_output.flush()
   fsync(log_output.fileno())
-    
+
   # Dedup merged bam
   output_bam = "{}/Dedup/{}_{}.dedup.bam".format(out_dir, sample_id,
                                                  region_name)

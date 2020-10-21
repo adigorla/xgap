@@ -1,1 +1,5 @@
-NA12878-ILMN-400 /nafs/scratch/original_datasets/NA12878-illumina/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R1_001.fastq,/nafs/scratch/data_bucket/original_datasets/NA12878-illumina/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R2_001.fastq
+NA12878-ILMN-200-1 /u/home/l/lukezhan/data_bucket/orginal_bam/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R1_001.fastq,/u/home/l/lukezhan/data_bucket/orginal_bam/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R2_001.fastq
+NA12878-ILMN-200-2 /u/home/l/lukezhan/data_bucket/orginal_bam/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R1_001.fastq,/u/home/l/lukezhan/data_bucket/orginal_bam/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R2_001.fastq
+NA12878-ILMN-200-3 /u/home/l/lukezhan/data_bucket/orginal_bam/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R1_001.fastq,/u/home/l/lukezhan/data_bucket/orginal_bam/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R2_001.fastq
+NA12878-ILMN-200-4 /u/home/l/lukezhan/data_bucket/orginal_bam/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R1_001.fastq,/u/home/l/lukezhan/data_bucket/orginal_bam/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R2_001.fastq
+NA12878-ILMN-200-5 /u/home/l/lukezhan/data_bucket/orginal_bam/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R1_001.fastq,/u/home/l/lukezhan/data_bucket/orginal_bam/NA12878_Rep_8_fastq/NA12878-Rep-8_S8_L00*_R2_001.fastq

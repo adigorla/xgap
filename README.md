@@ -7,7 +7,7 @@
 
 _**Documenation development in-progress**_
 
-xGAP (e**x**tensible **G**enome **A**nalysis **P**ipeline) is an efficient, extensible, modular, open-source, fault-tolerant next generation sequencing(NGS) genome analysis pipeline framework. It implements massive parallelization of the GATK best practices pipeline  by splitting a genome into many smaller regions with efficient load-balancing to achieve high scalability. It is compatible for use on on-premises (SGE & SLURM) high performance clusters and AWS EC2 cloud servers (using [ParallelCluster](https://github.com/aws/aws-parallelcluster)). It is currently developed to efficiently perform germline small variants discovery accordance in with the [GATK best practices guidlines](https://gatk.broadinstitute.org/hc/en-us/articles/360035535932-Germline-short-variant-discovery-SNPs-Indels-). xGAP fully automates each of processing steps in data analysis, from converting raw sequencing reads(FASTQs or BAMs) into variant call format (VCFs), allow researchers with limited computational backgrounds to take advantage of our pipeline. This pipeline allows rapidly generate germline small variant VCFs with minimal user intervantion and runtime. The end-to-end analysis runtime scales down as the number of core available (and number regions you can parallely process) increases. It is currently benchmarked to process 30x coverage whole-genome sequencing (WGS) data in approximately 90 minutes, with 256 cores. xGAP achieves average F1 scores of 99.37% for SNVs and 99.20% for indels across seven benchmark WGS datasets. The pipeline is easy-to-use and fault-tolerant because it can automatically re-initiate failed processes to minimize required user intervention without halting analyis. To use xGAP, one simply needs to update a runtime resource configuration file, provide paths to input files and execute xGAP using a simple command, after which the pipeline will fault-tolerantly progress without any further user intervention, sending a notification email after completion. The pipeline allows batch processing aswell. This allows you submit multiple WGS for analysis at the same time. The full software and source code is available to ensure anyone can use and modify the program freely to suit their research needs. 
+xGAP (e**x**tensible **G**enome **A**nalysis **P**ipeline) is an efficient, extensible, modular, open-source, fault-tolerant next generation sequencing(NGS) genome analysis pipeline framework. It implements massive parallelization of the GATK best practices pipeline  by splitting a genome into many smaller regions with efficient load-balancing to achieve high scalability. It is compatible for use on on-premises (SGE & SLURM) high performance clusters and AWS EC2 cloud servers (using [ParallelCluster](https://github.com/aws/aws-parallelcluster)). It is currently developed to efficiently perform germline small variants discovery accordance in with the [GATK best practices guidlines](https://gatk.broadinstitute.org/hc/en-us/articles/360035535932-Germline-short-variant-discovery-SNPs-Indels-). xGAP fully automates each of processing steps in data analysis, from converting raw sequencing reads(FASTQs or BAMs) into variant call format (VCFs), and a optional VQSR step. This allows researchers with even limited computational backgrounds to take advantage of our pipeline. This pipeline allows rapidly generate germline small variant VCFs with minimal user intervantion and runtime. The end-to-end analysis runtime scales down as the number of core available (and number regions you can parallely process) increases. It is currently benchmarked to process 30x coverage whole-genome sequencing (WGS) data in approximately 90 minutes, with 256 cores. xGAP achieves average F1 scores of 99.37% for SNVs and 99.20% for indels across seven benchmark WGS datasets. To date xGAP has been validated for compatibility withe HG19, GRCh37 and GRCh38. The pipeline is easy-to-use and fault-tolerant because it can automatically re-initiate failed processes to minimize required user intervention without halting analyis. To use xGAP, one simply needs to update a runtime resource configuration file, provide paths to input files and execute xGAP using a simple command, after which the pipeline will fault-tolerantly progress without any further user intervention, sending a notification email after completion. The pipeline allows batch processing aswell. This allows you submit multiple WGS for analysis at the same time. The full software and source code is available to ensure anyone can use and modify the program freely to suit their research needs. 
 
 
 ## Installation
@@ -16,10 +16,11 @@ xGAP (e**x**tensible **G**enome **A**nalysis **P**ipeline) is an efficient, exte
 
 * Python3
 * pysam
-* GATK 3.X or higher (GATK 3.8+ is preferred)
+* GATK 3.6+ or 4+
 * Java 1.8.X
 * BWA
 * sambamba (only tested on v0.6.6 because newer versions have had issues on Intel Xeon processors)
+* Conda (OPTIONAL)
 
 ### The Process
 
@@ -36,6 +37,17 @@ git clone --single-branch --branch master git@github.com:Adigorla/xgap.git
 
 **NOTE**: You only need to do this once after dowload to make sure xGAP knows where to look to run the python code. 
 
+### Running xGAP consistently across multiple platforms
+
+**1.** To produce consistent results across multiple platforms, we recommend that you create a conda or pip virtual environment and install the required modules for xGAP. 
+
+**2.** Users should save executables binaries or jar files in a resources folder in xGAP (GATK, BWA, etc).
+
+**3.** Users should assign the path for their local Python3 interpreter for xGAP to the newly created, xGAP specific virtual environment using the interpAssign.sh tool. 
+
+**4.** After the previous steps have been taken, users need to copy xGAP with ‘resources’ folder to the new platform and spin-up a new virtual environment using the resource/requirement specifications used in the previous one.
+
+Once users run the interpAssign.sh script with the path to the python executable in the new virtual environment and make minor adjustment to the paths in the config file, users are ready to run xGAP. We are currently focusing on containerizing xGAP in future builds to better support reproducibility.
 
 ## Usage
 

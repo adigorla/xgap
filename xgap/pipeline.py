@@ -1,4 +1,4 @@
-#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
+#!/u/local/apps/python/3.7.2/bin/python3
 
 """XGAP pipeline"""
 
@@ -12,6 +12,7 @@ import sys
 from sys import argv
 from glob import glob
 from sys import exit as sysexit
+from abc import ABCMeta, abstractmethod
 
 try:
     from xgap import scheduler
@@ -62,6 +63,7 @@ class TaskFastq(Task):
     runtime = self.config["avail-time"][0]
     num_tasks = 1
     log_output = "/dev/null"
+    #log_output = "/u/scratch/l/lukezhan/log_temp"
     job_id = [task_scheduler.submit_job(job_name, cmd, mem, runtime, log_output,
                                         num_tasks)]
     submit_checkpoint(self, job_id)
@@ -100,7 +102,7 @@ class TaskFastq(Task):
           num_chunks = line.strip()
       #need to ADD ERROR HANDLING for physical hardware failure
       except NameError as e :
-          reason = "\tERROR:{}\n\tYou might not have allocated enough MEMORY and/or RUN TIME for the Fastq task OR there was hardware failure. Rerun, after checking config.yml paramerters.\n".format(e) 
+          reason = "\tERROR:{}\n\tYou might not have allocated enough MEMORY and/or RUN TIME for the Fastq task OR there was hardware failure. Rerun, after checking config.yml paramerters.\n".format(e)
           if self.config['mail-notify'][0].lower() == 'y':
               msg = ["Aborted", str(self.__class__.__name__), reason, "This entire task failed!"]
               stat = super().mail_notify(msg)
@@ -151,7 +153,8 @@ class TaskBwa(Task):
       mkdir(final_bam_dir)
     mem = self.config["avail-memory"][1]
     runtime = self.config["avail-time"][1]
-    log_output = "/dev/null"
+    #log_output = "/dev/null"
+    log_output = "/u/scratch/l/lukezhan/log_temp"
     job_ids = []
     if rerun_indices:
       for index in rerun_indices:
@@ -257,19 +260,19 @@ class TaskDedup(Task):
     runtime = self.config["avail-time"][3]
     xgap_dir = self.config["xgap_path"]
     log_output = "/dev/null"
-#    log_output = "/ifshome/lizhan/log/"
+    log_output = "/u/scratch/l/lukezhan/log_temp"
     job_ids = []
     if rerun_indices:
       for index in rerun_indices:
-          cmd = "{}/merge_dedup.py {} {} {} {} {} {} {} {} {}".format(task_dir, 
-                                                                      sambamba, 
-                                                                      self.sample_id, 
-                                                                      n_regions, 
-                                                                      self.out_dir, 
-                                                                      interval_dir, 
-                                                                      log_prefix, 
-                                                                      index, 
-                                                                      java_dir, 
+          cmd = "{}/merge_dedup.py {} {} {} {} {} {} {} {} {}".format(task_dir,
+                                                                      sambamba,
+                                                                      self.sample_id,
+                                                                      n_regions,
+                                                                      self.out_dir,
+                                                                      interval_dir,
+                                                                      log_prefix,
+                                                                      index,
+                                                                      java_dir,
                                                                       xgap_dir)
           if index == 0 :
               job_ids.append(task_scheduler.submit_job(job_name, cmd, mem_chri, runtime_chri, log_output))
@@ -356,12 +359,13 @@ class TaskDedup(Task):
         log_paths.append([log_path])
     return log_paths
 
+
 class TaskRecal(Task):
   error_terms = [
                  "ERROR",
                  "Exception"
                 ]
-  success_terms = [ "done!",
+  success_terms = [ "...done!",
                    "Merged chrI reads",
                    "BaseRecalibrator completed",
                    "Merge chrI and BQSR completed"
@@ -390,8 +394,8 @@ class TaskRecal(Task):
     known_sites_str = ",".join(known_sites)
     mem = self.config["avail-memory"][4]
     runtime = self.config["avail-time"][4]
-    log_output = "/dev/null"
-#    log_output = "/ifshome/lizhan/log/"
+    #log_output = "/dev/null"
+    log_output = "/u/scratch/l/lukezhan/log_temp"
     job_ids = []
     if rerun_indices:
       for index in rerun_indices:
@@ -484,7 +488,7 @@ class TaskMergeRecal(Task):
     mem = self.config["avail-memory"][5]
     runtime = self.config["avail-time"][5]
     num_tasks = 1
-    log_output = "/dev/null"
+    log_output = "/u/scratch/l/lukezhan/log_temp"
     job_id = [task_scheduler.submit_job(job_name, cmd, mem, runtime, log_output,
                                         num_tasks)]
     submit_checkpoint(self, job_id)
@@ -508,8 +512,7 @@ class TaskMergeRecal(Task):
 
 class TaskBqsrHc(Task):
   error_terms = [
-                 "ERROR",
-                 "Exception",
+                 "ERROR"
                  "USER ERROR"
                 ]
   success_terms = [
@@ -538,7 +541,8 @@ class TaskBqsrHc(Task):
     dbsnp_path = self.config["dbsnp-vcf"]
     mem = self.config["avail-memory"][6]
     runtime = self.config["avail-time"][6]
-    log_output = "/dev/null"
+    #log_output = "/dev/null"
+    log_output = "/u/scratch/l/lukezhan/log_temp"
     job_ids = []
     if rerun_indices:
       for index in rerun_indices:
@@ -557,7 +561,7 @@ class TaskBqsrHc(Task):
         job_ids.append(task_scheduler.submit_job(job_name, cmd, mem, runtime,
                                                  log_output))
     else:
-      cmd = "{}/bqsr_hc_vcf.py {} {} {} {} {} {} {} {} {} {}".format(task_dir,
+      cmd = "{}/bqsr_hc.py {} {} {} {} {} {} {} {} {} {}".format(task_dir,
                                                               gatk_jar,
                                                               self.sample_id,
                                                               ref_fa,
@@ -577,7 +581,7 @@ class TaskBqsrHc(Task):
       recal_dir = "{}/Recal".format(self.out_dir)
       if path.isdir(recal_dir):
           rmtree(recal_dir)
-  
+
   def gen_output_paths(self):
     output_paths = []
     n_regions = self.config["n-regions"]
@@ -601,6 +605,72 @@ class TaskBqsrHc(Task):
       log_path = "{}.{}.log".format(log_prefix, index)
       log_paths.append([log_path])
     return log_paths
+
+class TaskVQSR(Task):
+  error_terms = [
+                  "ERROR",
+                  "Exception"
+                ]
+  @property
+  @abstractmethod
+  def success_terms(self):
+    success_terms = [ "Merge VCFs completed" ] 
+    if self.config["vqsr-exe"].lower() == "y":
+        success_terms.append("Success")
+        success_terms.append("Finished")
+        success_terms.append("Done")
+    return success_terms
+
+  def run(self, rerun_indicies=None):
+    job_name="VQSR_{}".format(self.sample_id)
+    log_path = "{}/VQSR/vqsr.log".format(self.log_dir)
+    log_dir="{}/VQSR/".format(self.log_dir)
+    if not path.isdir(log_dir):
+      mkdir(log_dir)
+    working_dir = self.config["working-dir"]
+    dbsnp = self.config["dbsnp-vcf"]
+    ref_fa = self.config["ref-fasta"]
+    onekindel = self.config["1000g-indel-vcf"]
+    mills = self.config["mills-devine-indel-vcf"]
+    omni = self.config["omni"]
+    hapmap = self.config["hapmap"]
+    gatk_jar=self.config["gatk-jar"]
+    java_dir = self.config["java-dir"]
+    bcftools_path = self.config["bcftools-path"]
+    vqsr_option = self.config["vqsr-exe"]
+    cmd = "{}/variant_filter.py {} {} {} {} {} {} {} {} {} {} {} {} {}".format(task_dir,
+                                                   gatk_jar,
+                                                   bcftools_path,
+                                                   self.sample_id,
+                                                   self.out_dir,
+                                                   log_path, java_dir, ref_fa, onekindel, hapmap, omni, mills, dbsnp, vqsr_option)
+    mem = self.config["avail-memory"][7]
+    runtime = self.config["avail-time"][7]
+    num_tasks = 1
+    log_output = "/u/scratch/l/lukezhan/xdebug"
+    job_ids = [task_scheduler.submit_job(job_name, cmd, mem, runtime, log_output,
+                                         num_tasks)]
+    submit_checkpoint(self, job_ids)
+  def clean_up(self):
+    pass
+
+  def gen_output_paths(self):
+    output_paths = [[]]
+    output_paths[0].append("{}/vcf/{}.vcf.gz".format(self.out_dir, self.sample_id))
+    vqsr_option = self.config["vqsr-exe"]
+    if vqsr_option.lower() == "y": 
+      output_paths[0].append("{}/vcf/{}_indel.recal".format(self.out_dir, self.sample_id))
+      output_paths[0].append("{}/vcf/{}_indel.tranches".format(self.out_dir, self.sample_id))
+      output_paths[0].append("{}/vcf/{}_snp.tranches".format(self.out_dir, self.sample_id))
+      output_paths[0].append("{}/vcf/{}_snp.recal".format(self.out_dir, self.sample_id))
+      output_paths[0].append("{}/vcf/{}_recalibrated_indels.vcf.gz".format(self.out_dir, self.sample_id))
+      output_paths[0].append("{}/vcf/{}_recalibrated_snps.vcf.gz".format(self.out_dir, self.sample_id))
+    return output_paths
+
+  def gen_log_paths(self):
+    log_paths = [["{}/VQSR/vqsr.log".format(self.log_dir)]]
+    return log_paths
+
 
 class TaskMergeBams(Task):
   error_terms = [
@@ -628,24 +698,24 @@ class TaskMergeBams(Task):
                                                    n_regions,
                                                    interval_dir,
                                                    log_path)
-    mem = self.config["avail-memory"][7]
-    runtime = self.config["avail-time"][7]
+    mem = self.config["avail-memory"][8]
+    runtime = self.config["avail-time"][8]
     num_tasks = 1
-    log_output = "/dev/null"
+    log_output = "/u/scratch/l/lukezhan/xdebug"
     job_ids = [task_scheduler.submit_job(job_name, cmd, mem, runtime, log_output,
                                          num_tasks)]
     submit_checkpoint(self, job_ids)
 
 
   def clean_up(self):
-      
+
     #Successful so remove logs, commented out for testing
 
     #for step in ["Recal", "BqsrHc", "MergeBams", "Dedup", "Bwa", "Fastq"]:
     #  rmtree("{}/{}".format(self.log_dir, step))
-     
+
       # remove all regional, mapq0 and unmapped bams and index files
-    
+
     for index in range(int(self.config["n-regions"])):
         bam_path = "{}/bam/{}_{}.dedup.recal.bam".format(self.out_dir, self.sample_id, str(index).zfill(len(self.config["n-regions"])))
         bai_path = "{}/bam/{}_{}.dedup.recal.bai".format(self.out_dir, self.sample_id, str(index).zfill(len(self.config["n-regions"])))
@@ -657,8 +727,8 @@ class TaskMergeBams(Task):
         rmtree("{}/bam/qcfail".format(self.out_dir))
     if path.isdir("{}/bam/unmapped".format(self.out_dir)):
          rmtree("{}/bam/unmapped".format(self.out_dir))
-             
-    
+
+
 
   def gen_output_paths(self):
     output_paths = [[]]
@@ -692,20 +762,20 @@ class TaskFinish(Task):
           finish_file.write("\n{}\n".format(stat))
       print(statement)
       print(self.__class__.__name__)
-      sysexit()
+      
 
   def clean_up(self):
-      
+
       #remove all bams during testing
-      #CHANGE THIS 
+      #CHANGE THIS
       bam_dir = "{}/bam".format(self.out_dir)
       if path.isdir(bam_dir):
           rmtree(bam_dir)
-      
+
     #Successful so remove logs, commented out for testing
 
     #for step in ["Recal", "BqsrHc", "MergeBams", "Dedup", "Bwa", "Fastq"]:
-    #  rmtree("{}/{}".format(self.log_dir, step))  
+    #  rmtree("{}/{}".format(self.log_dir, step))
 
   def gen_output_paths(self):
     output_paths = [[]]
@@ -720,13 +790,12 @@ def submit_checkpoint(task, hold_ids):
   job_name = "check_{}".format(task.sample_id)
   script = path.abspath(__file__)
   cmd = " ".join([script, task.sample_id, task.sample_path, task.config_path, task.xgap_path])
-  mem = task.config["avail-memory"][8]
-  runtime = task.config["avail-time"][8]
+  mem = task.config["avail-memory"][9]
+  runtime = task.config["avail-time"][9]
   log_output = task.log_dir
-  # TODO: Abstract for other schedulers
-  hold_ids_str = ":".join(hold_id.strip() for hold_id in hold_ids)
+  #hold_ids_str = ":".join(hold_id.strip() for hold_id in hold_ids)
   task_scheduler.submit_job(job_name, cmd, mem, runtime, log_output,
-                            hold_id=hold_ids_str)
+                            hold_ids=hold_ids)
 
 def main(sampleid, samplepath,configpath):
     pipeline = [
@@ -736,6 +805,7 @@ def main(sampleid, samplepath,configpath):
                 TaskRecal,
                 TaskMergeRecal,
                 TaskBqsrHc,
+		TaskVQSR,
 #                TaskMergeBams,
                 TaskFinish
                ]
@@ -744,7 +814,7 @@ def main(sampleid, samplepath,configpath):
     config_path = sys.path[2]
     config = workflow.setup_utils.read_simple_yaml(config_path)
     config["xgap_path"] = sys.path[1]
-    global task_scheduler 
+    global task_scheduler
     task_scheduler = getattr(scheduler, config["scheduler"])
     workflow.checkpoint.main(sample_id, sample_path, config, config_path, pipeline)
 
@@ -756,6 +826,7 @@ if __name__ == "__main__":
               TaskRecal,
               TaskMergeRecal,
               TaskBqsrHc,
+	      TaskVQSR,
 #              TaskMergeBams,
               TaskFinish
               ]

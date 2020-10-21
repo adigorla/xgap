@@ -3,9 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# text editor (vi / emacs) intermediate files
+# text editor (vi / emacs) intermediate/swap files
 *~
 *.*#
+*.swp
+
+# Ignoring Core Dumps 
+bin/core.*
 
 # All dev-time config yaml files and input files except the public templates
 

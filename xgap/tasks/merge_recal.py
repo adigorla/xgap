@@ -1,14 +1,10 @@
-#!/ifshome/agorla/data_bucket/apps/python3.7.4/bin/python3
+#!/u/local/apps/python/3.7.2/bin/python3
 
 """Merges BQSR tables for each region"""
 """IMP NOTE: This BQSR report merge script only works with GATK 3.7 or above"""
-try:
-  from subprocess import run
-except ImportError:
-  # Python 2.7 compatibility
-  from subprocess import call
-  run = call
 
+from subprocess import run
+from subprocess import check_output
 from os import fsync
 from sys import stdout, argv
 from sys import exit as sysexit
@@ -24,11 +20,31 @@ def bqsr_gather(gatk_jar, in_paths, out_path, log_output=stdout):
     log_output: File handle for log file
   """
   # Tool name subject to change.
-  gather_tool = "org.broadinstitute.gatk.tools.GatherBqsrReports"
-  cmd = [JAVA_DIR, "-Xmx4g", "-Djava.awt.headless=true", "-cp", gatk_jar, gather_tool]
-  for in_path in in_paths:
-    cmd.append("I={}".format(in_path))
-  cmd.append("O={}".format(out_path))
+  output=check_output([JAVA_DIR, "-Xmx4g", "-Xms512m","-Djava.awt.headless=true", "-jar", gatk_jar, "--version"])
+  charstr=output.decode('utf-8')
+  gatk_ver="4"
+  gather_tool="GatherBQSRReports"
+  for i, c in enumerate(charstr):
+    if c.isdigit():
+        gatk_ver=(charstr[i])
+        break
+  
+  cmd = [JAVA_DIR, "-Xmx4g", "-Xms512m", "-Djava.awt.headless=true"]
+  
+  if gatk_ver=="3":
+    cmd.extend(["-cp", gatk_jar, "org.broadinstitute.gatk.tools.GatherBqsrReports"])
+    for in_path in in_paths:
+      cmd.append("I={}".format(in_path))
+    cmd.append("O={}".format(out_path))
+    
+  elif gatk_ver=="4":
+    cmd.extend(["-jar", gatk_jar, "GatherBQSRReports"])
+    for in_path in in_paths:
+      cmd.append("-I")
+      cmd.append(in_path)
+    cmd.append("-O")
+    cmd.append(out_path)
+  
   start = time()
   run(cmd, stdout=log_output, stderr=log_output)
   end = time()

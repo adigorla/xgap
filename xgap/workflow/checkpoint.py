@@ -37,12 +37,14 @@ class Task(object):
     """Return true if task is complete"""
     return check_step(self.output_paths, self.log_paths,
                       self.success_terms, self.error_terms)
-  @abstractproperty
+  @property
+  @abstractmethod
   def error_terms(self):
     """Define abstract member error_terms"""
     pass
 
-  @abstractproperty
+  @property
+  @abstractmethod
   def success_terms(self):
     """Define abstract member success_terms"""
     pass
