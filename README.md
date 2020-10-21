@@ -1,7 +1,7 @@
 # XGAP
 
 ![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)
-![release: v0.5.7](https://img.shields.io/badge/release-v0.5.7-green)
+![release: v0.7.0](https://img.shields.io/badge/release-v0.7.0-green)
 ![coverage: 100%](https://img.shields.io/badge/coverage-100%25-brightgreen)
 ![docs: in-progress](https://img.shields.io/badge/docs-in--progress-yellow)
 
